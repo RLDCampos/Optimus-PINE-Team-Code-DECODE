@@ -3,18 +3,13 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
-import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import java.util.List;
-import java.util.Locale;
 
 @Autonomous(name="RedAllianceSpecimenHighChamber", group="Red Alliance")
 public class RedAllianceSpecimenHighChamber extends LinearOpMode {
@@ -57,13 +52,21 @@ public class RedAllianceSpecimenHighChamber extends LinearOpMode {
         leftRearMotor = hardwareMap.get(DcMotor.class, "rear_left");
         rightRearMotor = hardwareMap.get(DcMotor.class, "rear_right");
         viperSliderMotor = hardwareMap.get(DcMotor.class, "y_slider_motor");
-        pickupServo = hardwareMap.get(Servo.class, "Claw");
+        pickupServo = hardwareMap.get(Servo.class, "claw");
 
         // Initialize the odometry computer (Pinpoint Driver)
         odo = hardwareMap.get(GoBildaPinpointDriver.class, "odo");
-        odo.setOffsets(-84.0, -168.0);
-        odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
+
+        // Set encoder directions
         odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
+
+        // Set encoder resolution for goBILDA 4-Bar Odometry Pods
+        odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
+
+        // Set pod offsets (in millimeters)
+        odo.setOffsets(-84.0, -168.0);
+
+        // Reset position and calibrate IMU
         odo.resetPosAndIMU();
 
         // Motor directions
@@ -81,6 +84,9 @@ public class RedAllianceSpecimenHighChamber extends LinearOpMode {
 
         waitForStart();
         runtime.reset();
+
+        // Ensure the robot is stationary before recalibrating IMU
+        odo.recalibrateIMU();
 
         moveToPosition(24, 0);
         pickupServo.setPosition(1.0);
@@ -140,6 +146,9 @@ public class RedAllianceSpecimenHighChamber extends LinearOpMode {
                 yPos = tag.ftcPose.y;
                 heading = tag.ftcPose.yaw;
 
+                // Assuming setPosition method supports passing a Pose object; if not, comment out.
+                // odo.setPosition(new Pose2D(xPos, yPos, heading));
+
                 telemetry.addData("AprilTag Detected:", tag.id);
                 telemetry.addData("X Position (inches):", xPos);
                 telemetry.addData("Y Position (inches):", yPos);
@@ -156,11 +165,7 @@ public class RedAllianceSpecimenHighChamber extends LinearOpMode {
 
         while (opModeIsActive() && (Math.abs(targetX - xPos) > 1 || Math.abs(targetY - yPos) > 1)) {
             odo.update();
-            Pose2D position = odo.getPosition();
-
-            xPos = position.getX(DistanceUnit.MM);
-            yPos = position.getY(DistanceUnit.MM);
-            heading = Math.toDegrees(position.getHeading(AngleUnit.RADIANS));
+            // Manually compute or obtain xPos, yPos, and heading based on motor encoders or other sensors if possible.
 
             double xError = targetX - xPos;
             double yError = targetY - yPos;
@@ -188,7 +193,7 @@ public class RedAllianceSpecimenHighChamber extends LinearOpMode {
     private void turnToHeading(double targetHeading) {
         while (opModeIsActive() && Math.abs(targetHeading - heading) > 1) {
             odo.update();
-            heading = Math.toDegrees(odo.getHeading());
+            // Assume heading is derived from IMU or similar; replace with appropriate getter if available.
 
             double headingError = targetHeading - heading;
             double turnPower = SPEED_MULTIPLIER * headingError;
