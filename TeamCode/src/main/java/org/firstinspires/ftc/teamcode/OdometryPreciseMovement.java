@@ -5,11 +5,11 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
-@Autonomous(name = "OdometryPreciseMovement", group = "Autonomous")
+@Autonomous(name = "Odo Precise Movement", group = "Autonomous")
 public class OdometryPreciseMovement extends LinearOpMode {
 
+    // Declare hardware and odometry driver
     private DcMotor leftFrontMotor;
     private DcMotor rightFrontMotor;
     private DcMotor leftRearMotor;
@@ -17,135 +17,96 @@ public class OdometryPreciseMovement extends LinearOpMode {
     private GoBildaPinpointDriver odo;
 
     private static final double SPEED_MULTIPLIER = 0.2; // Motor speed
-    private static final double TICKS_PER_MM = 13.26291192; // Default for Swingarm pod
+    //private static final double TICKS_PER_MM = 13.26291192; // Default for Swingarm pod
 
     @Override
     public void runOpMode() {
         // Initialize hardware
+        initializeMotors();
+        initializeOdometry();
+
+        telemetry.addData("Status", "Waiting for Start...");
+        telemetry.update();
+        waitForStart();
+
+        if (opModeIsActive()) {
+            // Movement sequence
+            moveAndTurn(0, 600, 0, true);       // Move forward 600 mm, recalibrate IMU
+            moveAndTurn(-90, 0, 600, true);    // Rotate CCW 90° and strafe right, recalibrate
+            moveAndTurn(180, -300, 0, true);   // Rotate 180° and move backward, recalibrate
+            moveAndTurn(90, 300, -300, true);  // Rotate CW 90° and move diagonally, recalibrate
+        }
+    }
+
+    /**
+     * Initializes the motors with appropriate directions.
+     */
+    private void initializeMotors() {
         leftFrontMotor = hardwareMap.get(DcMotor.class, "front_left");
         rightFrontMotor = hardwareMap.get(DcMotor.class, "front_right");
         leftRearMotor = hardwareMap.get(DcMotor.class, "rear_left");
         rightRearMotor = hardwareMap.get(DcMotor.class, "rear_right");
+
+        leftFrontMotor.setDirection(DcMotor.Direction.FORWARD);
+        leftRearMotor.setDirection(DcMotor.Direction.FORWARD);
+        rightFrontMotor.setDirection(DcMotor.Direction.REVERSE);
+        rightRearMotor.setDirection(DcMotor.Direction.REVERSE);
+    }
+
+    /**
+     * Configures the GoBILDA Odometry Computer for use.
+     */
+    private void initializeOdometry() {
         odo = hardwareMap.get(GoBildaPinpointDriver.class, "odo");
 
-        // Configure odometry computer
-        odo.setOffsets(-84.0, -168.0); // Offsets in mm (example values, adjust as needed)
-        odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_SWINGARM_POD); // Using swingarm pods
+        // Configure odometry with offsets and resolution
+        odo.setOffsets(-84.0, -168.0); // Example offsets in mm
+        odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_SWINGARM_POD);
         odo.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
 
-        // Reset position and calibrate IMU
+        // Reset and calibrate IMU
         telemetry.addData("Status", "Calibrating IMU...");
         telemetry.update();
         odo.resetPosAndIMU();
         sleep(1000); // Allow time for calibration
-
-        telemetry.addData("Status", "Calibrated and Initialized");
+        telemetry.addData("Status", "Odometry Initialized");
         telemetry.update();
-
-        // Set motor directions
-        leftFrontMotor.setDirection(DcMotor.Direction.FORWARD);
-        leftRearMotor.setDirection(DcMotor.Direction.FORWARD);
-        rightFrontMotor.setDirection(DcMotor.Direction.REVERSE);
-        rightRearMotor.setDirection(DcMotor.Direction.FORWARD);
-
-        waitForStart();
-
-        if (opModeIsActive()) {
-            // Move to position (600 mm forward, 0 mm lateral)
-            moveToPosition(600, 0);
-
-            // Pause for 2 seconds
-            sleep(2000);
-
-            // Move back to position (-300 mm forward, 0 mm lateral)
-            moveToPosition(-300, 0);
-
-            //Pause for 1 seconds
-            sleep(1000);
-
-            // Rotate 90 degrees counterclockwise
-            turnToHeading(-90); // 90 degrees clockwise
-
-            //Pause for 1 seconds
-            sleep(1000);
-
-            // Move to position (1200 mm forward, 0 mm lateral)
-            moveToPosition(1200, 0);
-
-            //Pause for 1 seconds
-            sleep(1000);
-
-            // Rotate 90 degrees counterclockwise
-            turnToHeading(-90); // 90 degrees clockwise
-
-            // Move to position (600 mm forward, 0 mm lateral)
-            moveToPosition(600, 0);
-
-            //Pause for 5 seconds
-            sleep(5000);
-
-            // Move back to position (-300 mm forward, 0 mm lateral)
-            moveToPosition(-300, 0);
-
-            // Rotate 90 degrees counterclockwise
-            turnToHeading(-90); // 90 degrees clockwise
-
-            // Move to position (1200 mm forward, 0 mm lateral)
-            moveToPosition(1200, 0);
-
-            // Rotate 90 degrees counterclockwise
-            turnToHeading(-90); // 90 degrees clockwise
-
-            // Move to position (120 mm forward, 0 mm lateral)
-            moveToPosition(120, 0);
-
-            // Rotate 5 full turns
-            //turnToHeading(1800); // 360 degrees * 5 turns
-
-            // Recalibrate IMU during autonomous
-            odo.recalibrateIMU();
-        }
     }
 
-    private void moveToPosition(double targetX, double targetY) {
-        odo.update();
-        Pose2D currentPosition = odo.getPosition();
+    /**
+     * Rotates the robot to the specified heading and moves to the specified position.
+     * @param targetHeading Target heading in degrees.
+     * @param targetX Target X position in mm.
+     * @param targetY Target Y position in mm.
+     * @param recalibrate Whether to recalibrate the IMU after each action.
+     */
+    private void moveAndTurn(double targetHeading, double targetX, double targetY, boolean recalibrate) {
+        // Rotate to the specified heading
+        turnToHeading(targetHeading);
 
-        double xPos = currentPosition.getX(DistanceUnit.MM);
-        double yPos = currentPosition.getY(DistanceUnit.MM);
-
-        while (opModeIsActive() && (Math.abs(targetX - xPos) > 1 || Math.abs(targetY - yPos) > 1)) {
-            odo.update();
-            currentPosition = odo.getPosition();
-            xPos = currentPosition.getX(DistanceUnit.MM);
-            yPos = currentPosition.getY(DistanceUnit.MM);
-
-            double xError = targetX - xPos;
-            double yError = targetY - yPos;
-
-            double leftFrontPower = SPEED_MULTIPLIER * (yError + xError);
-            double rightFrontPower = SPEED_MULTIPLIER * (yError - xError);
-            double leftRearPower = leftFrontPower;
-            double rightRearPower = rightFrontPower;
-
-            leftFrontMotor.setPower(leftFrontPower);
-            rightFrontMotor.setPower(rightFrontPower);
-            leftRearMotor.setPower(leftRearPower);
-            rightRearMotor.setPower(rightRearPower);
-
-            telemetry.addData("Target X (mm)", targetX);
-            telemetry.addData("Target Y (mm)", targetY);
-            telemetry.addData("Current X (mm)", xPos);
-            telemetry.addData("Current Y (mm)", yPos);
+        if (recalibrate) {
+            odo.recalibrateIMU();
+            telemetry.addData("Status", "IMU Recalibrated After Turn");
             telemetry.update();
         }
 
-        stopMotors();
+        // Move to the specified position
+        moveToPosition(targetX, targetY);
+
+        if (recalibrate) {
+            odo.recalibrateIMU();
+            telemetry.addData("Status", "IMU Recalibrated After Move");
+            telemetry.update();
+        }
     }
 
+    /**
+     * Rotates the robot to the specified heading.
+     * @param targetHeadingDegrees Target heading in degrees.
+     */
     private void turnToHeading(double targetHeadingDegrees) {
         odo.update();
-        double heading = Math.toDegrees(odo.getHeading()); // Convert radians to degrees
+        double heading = Math.toDegrees(odo.getHeading());
 
         while (opModeIsActive() && Math.abs(targetHeadingDegrees - heading) > 1) {
             odo.update();
@@ -167,6 +128,58 @@ public class OdometryPreciseMovement extends LinearOpMode {
         stopMotors();
     }
 
+    /**
+     * Moves the robot to the specified X and Y coordinates.
+     * @param targetX Target X position in mm.
+     * @param targetY Target Y position in mm.
+     */
+    private void moveToPosition(double targetX, double targetY) {
+        odo.update();
+        Pose2D currentPosition = odo.getPosition();
+
+        double xPos = currentPosition.getX(DistanceUnit.MM);
+        double yPos = currentPosition.getY(DistanceUnit.MM);
+
+        while (opModeIsActive() && (Math.abs(targetX - xPos) > 1 || Math.abs(targetY - yPos) > 1)) {
+            odo.update();
+            currentPosition = odo.getPosition();
+            xPos = currentPosition.getX(DistanceUnit.MM);
+            yPos = currentPosition.getY(DistanceUnit.MM);
+
+            double xError = targetX - xPos;
+            double yError = targetY - yPos;
+
+            double leftFrontPower = SPEED_MULTIPLIER * (yError + xError);
+            double rightFrontPower = SPEED_MULTIPLIER * (yError - xError);
+            double leftRearPower = leftFrontPower;
+            double rightRearPower = rightFrontPower;
+
+            double maxPower = Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower));
+            if (maxPower > 1) {
+                leftFrontPower /= maxPower;
+                rightFrontPower /= maxPower;
+                leftRearPower /= maxPower;
+                rightRearPower /= maxPower;
+            }
+
+            leftFrontMotor.setPower(leftFrontPower);
+            rightFrontMotor.setPower(rightFrontPower);
+            leftRearMotor.setPower(leftRearPower);
+            rightRearMotor.setPower(rightRearPower);
+
+            telemetry.addData("Target X (mm)", targetX);
+            telemetry.addData("Target Y (mm)", targetY);
+            telemetry.addData("Current X (mm)", xPos);
+            telemetry.addData("Current Y (mm)", yPos);
+            telemetry.update();
+        }
+
+        stopMotors();
+    }
+
+    /**
+     * Stops all motors.
+     */
     private void stopMotors() {
         leftFrontMotor.setPower(0);
         rightFrontMotor.setPower(0);

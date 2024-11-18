@@ -6,13 +6,14 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 import java.util.List;
 
-@Autonomous(name="RedAllianceSpecimenHighChamber", group="Red Alliance")
-public class RedAllianceSpecimenHighChamber extends LinearOpMode {
+@Autonomous(name="RedAllianceSpecimen", group="Red Alliance")
+public class RedAllianceSpecimen extends LinearOpMode {
 
     private DcMotor leftFrontMotor;
     private DcMotor rightFrontMotor;
@@ -67,7 +68,8 @@ public class RedAllianceSpecimenHighChamber extends LinearOpMode {
         odo.setOffsets(-84.0, -168.0);
 
         // Reset position and calibrate IMU
-        odo.resetPosAndIMU();
+
+        odo.recalibrateIMU();
 
         // Motor directions
         leftFrontMotor.setDirection(DcMotor.Direction.FORWARD);
@@ -87,10 +89,6 @@ public class RedAllianceSpecimenHighChamber extends LinearOpMode {
 
         // Ensure the robot is stationary before recalibrating IMU
         odo.recalibrateIMU();
-
-        moveToPosition(24, 0);
-        pickupServo.setPosition(1.0);
-        sleep(500);
 
         if (webcamAvailable) {
             moveToPositionWithAprilTag(60, 0);
