@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
@@ -16,8 +15,7 @@ public class OdometryAuto extends LinearOpMode {
     private DcMotor rightRearMotor;
     private GoBildaPinpointDriver odo;
 
-    private static final double SPEED_MULTIPLIER = 0.2; // Speed for turning and movement
-    private static final double TOLERANCE = 1; // Position and heading tolerance in mm and degrees
+    private static final double TOLERANCE = 1.0; // Position and heading tolerance in mm and degrees
 
     @Override
     public void runOpMode() {
@@ -30,13 +28,12 @@ public class OdometryAuto extends LinearOpMode {
         waitForStart();
 
         if (opModeIsActive()) {
-            // Movement sequence for a 30-second autonomous
-            moveToPosition(600, 0);      // Move forward 600 mm
-            recalibrateIMU();           // Recalibrate for precision
-            rotateToHeading(-90);       // Rotate CCW to -90°
-            moveToPosition(0, 600);     // Strafe to the right 600 mm
-            recalibrateIMU();           // Recalibrate for precision
-            moveToPosition(300, 600);   // Diagonal movement
+            // Example of an autonomous path
+            moveToTarget(600, 0, 0);      // Move forward to (600 mm, 0 mm) with 0° heading
+            recalibrateIMU();            // Recalibrate for precision
+            moveToTarget(0, 600, -90);   // Strafe right to (0 mm, 600 mm) with -90° heading
+            recalibrateIMU();            // Recalibrate for precision
+            moveToTarget(300, 600, 180); // Diagonal movement to (300 mm, 600 mm) with 180° heading
         }
     }
 
@@ -56,7 +53,7 @@ public class OdometryAuto extends LinearOpMode {
     }
 
     /**
-     * Configures the GoBILDA Odometry Computer.
+     * Configures the GoBILDA Pinpoint Odometry Computer.
      */
     private void initializeOdometry() {
         odo = hardwareMap.get(GoBildaPinpointDriver.class, "odo");
@@ -74,42 +71,70 @@ public class OdometryAuto extends LinearOpMode {
     }
 
     /**
-     * Moves the robot to the specified X and Y coordinates in mm.
+     * Moves the robot to the specified X, Y, and heading using cosine scaling for smooth motion.
      * @param targetX Target X position in mm.
      * @param targetY Target Y position in mm.
+     * @param targetHeading Target heading in degrees.
      */
-    private void moveToPosition(double targetX, double targetY) {
+    private void moveToTarget(double targetX, double targetY, double targetHeading) {
         odo.update();
         Pose2D currentPosition = odo.getPosition();
 
         double xPos = currentPosition.getX(DistanceUnit.MM);
         double yPos = currentPosition.getY(DistanceUnit.MM);
+        double heading = Math.toDegrees(odo.getHeading());
 
-        while (opModeIsActive() && (Math.abs(targetX - xPos) > TOLERANCE || Math.abs(targetY - yPos) > TOLERANCE)) {
+        double maxError = 1000;  // Max positional error (mm)
+        double maxPower = 0.8;   // Maximum motor power
+        double maxHeadingError = 90; // Max heading error (degrees)
+        double headingPowerScale = 0.2; // Scaling factor for heading adjustment
+
+        while (opModeIsActive() && (
+                Math.abs(targetX - xPos) > TOLERANCE ||
+                Math.abs(targetY - yPos) > TOLERANCE ||
+                Math.abs(targetHeading - heading) > TOLERANCE)) {
+
             odo.update();
             currentPosition = odo.getPosition();
             xPos = currentPosition.getX(DistanceUnit.MM);
             yPos = currentPosition.getY(DistanceUnit.MM);
+            heading = Math.toDegrees(odo.getHeading());
 
+            // Calculate errors
             double xError = targetX - xPos;
             double yError = targetY - yPos;
+            double hError = targetHeading - heading;
 
-            double leftFrontPower = SPEED_MULTIPLIER * (yError + xError);
-            double rightFrontPower = SPEED_MULTIPLIER * (yError - xError);
-            double leftRearPower = leftFrontPower;
-            double rightRearPower = rightFrontPower;
+            // Calculate motor powers using cosine scaling
+            double leftFrontPower = calculateCosinePower(yError + xError, maxError, maxPower)
+                    + headingPowerScale * calculateCosinePower(hError, maxHeadingError, maxPower);
 
+            double rightFrontPower = calculateCosinePower(yError - xError, maxError, maxPower)
+                    - headingPowerScale * calculateCosinePower(hError, maxHeadingError, maxPower);
+
+            double leftRearPower = calculateCosinePower(yError + xError, maxError, maxPower)
+                    + headingPowerScale * calculateCosinePower(hError, maxHeadingError, maxPower);
+
+            double rightRearPower = calculateCosinePower(yError - xError, maxError, maxPower)
+                    - headingPowerScale * calculateCosinePower(hError, maxHeadingError, maxPower);
+
+            // Normalize all motor powers
             normalizeMotorPowers(leftFrontPower, rightFrontPower, leftRearPower, rightRearPower);
 
+            // Apply motor powers
             leftFrontMotor.setPower(leftFrontPower);
             rightFrontMotor.setPower(rightFrontPower);
             leftRearMotor.setPower(leftRearPower);
             rightRearMotor.setPower(rightRearPower);
 
+
+            // Telemetry for debugging
             telemetry.addData("Target X (mm)", targetX);
             telemetry.addData("Target Y (mm)", targetY);
+            telemetry.addData("Target Heading (degrees)", targetHeading);
             telemetry.addData("Current X (mm)", xPos);
             telemetry.addData("Current Y (mm)", yPos);
+            telemetry.addData("Current Heading (degrees)", heading);
             telemetry.update();
         }
 
@@ -117,31 +142,15 @@ public class OdometryAuto extends LinearOpMode {
     }
 
     /**
-     * Rotates the robot to the specified heading in degrees.
-     * @param targetHeading Target heading in degrees.
+     * Calculates motor power using a cosine scaling function for smooth transitions.
      */
-    private void rotateToHeading(double targetHeading) {
-        odo.update();
-        double heading = Math.toDegrees(odo.getHeading());
-
-        while (opModeIsActive() && Math.abs(targetHeading - heading) > TOLERANCE) {
-            odo.update();
-            heading = Math.toDegrees(odo.getHeading());
-
-            double headingError = targetHeading - heading;
-            double turnPower = SPEED_MULTIPLIER * 0.1 * headingError;
-
-            leftFrontMotor.setPower(-turnPower);
-            rightFrontMotor.setPower(turnPower);
-            leftRearMotor.setPower(-turnPower);
-            rightRearMotor.setPower(turnPower);
-
-            telemetry.addData("Target Heading (degrees)", targetHeading);
-            telemetry.addData("Current Heading (degrees)", heading);
-            telemetry.update();
+    private double calculateCosinePower(double error, double maxError, double maxPower) {
+        if (Math.abs(error) > maxError) {
+            return Math.signum(error) * maxPower; // Maximum power for large errors
         }
-
-        stopMotors();
+        // Cosine scaling for smoother transitions
+        double scaledPower = maxPower * Math.cos((Math.PI * error) / (2 * maxError));
+        return Math.signum(error) * Math.max(Math.abs(scaledPower), 0.1); // Ensure a minimum power
     }
 
     /**
