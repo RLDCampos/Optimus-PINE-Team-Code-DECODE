@@ -28,7 +28,7 @@ public class RedAllianceSideA extends LinearOpMode {
     private static final double Y_POD_OFFSET = -368.0; // Y (strafer) pod offset in mm
 
     // Starting field position (Red Alliance, near Human Player)
-    private static final double START_X = -600.0; // Starting X position in mm
+    private static final double START_X = 600.0; // Starting X position in mm
     private static final double START_Y = -1200.0; // Starting Y position in mm
     private static final double START_HEADING = 90.0; // Facing toward center of the field (degrees)
 

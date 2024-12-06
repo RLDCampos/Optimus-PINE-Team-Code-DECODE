@@ -31,7 +31,7 @@ public class OdometryAuto extends LinearOpMode {
             // Example of an autonomous path
             moveToTarget(600, 0, 0);      // Move forward to (600 mm, 0 mm) with 0° heading
             recalibrateIMU();            // Recalibrate for precision
-            moveToTarget(0, 600, -90);   // Strafe right to (0 mm, 600 mm) with -90° heading
+            moveToTarget(0, -600, -90);   // Strafe right to (0 mm, 600 mm) with -90° heading
             recalibrateIMU();            // Recalibrate for precision
             moveToTarget(300, 600, 180); // Diagonal movement to (300 mm, 600 mm) with 180° heading
         }
