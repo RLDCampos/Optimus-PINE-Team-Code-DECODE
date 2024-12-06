@@ -13,62 +13,72 @@ import java.util.List;
 
 public class SampleMecanumDrive extends MecanumDrive {
 
-    private DcMotor leftFront, leftRear, rightRear, rightFront;
-    private GoBildaPinpointDriver pinpoint;
+    // Motors
+    private final DcMotor leftFront;
+    private final DcMotor leftBack;
+    private final DcMotor rightFront;
+    private final DcMotor rightBack;
+
+    // goBILDA Pinpoint Odometry Computer
+    private final GoBildaPinpointDriver pinpoint;
+
+    // PID coefficients (adjust as needed)
+    private static final PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(10, 0, 0);
+    private static final PIDCoefficients HEADING_PID = new PIDCoefficients(8, 0, 0);
 
     public SampleMecanumDrive(HardwareMap hardwareMap) {
-        super(1, 1, 1, 1); // kV, kA, and track width (adjust values for your robot)
+        super(1, 1, 1, 1); // Set appropriate track width, kV, kA, and angular kV for your robot
 
         // Initialize motors
         leftFront = hardwareMap.get(DcMotor.class, "left_front");
-        leftRear = hardwareMap.get(DcMotor.class, "left_back");
-        rightRear = hardwareMap.get(DcMotor.class, "right_back");
+        leftBack = hardwareMap.get(DcMotor.class, "left_back");
         rightFront = hardwareMap.get(DcMotor.class, "right_front");
+        rightBack = hardwareMap.get(DcMotor.class, "right_back");
 
-        // Initialize Pinpoint
+        // Initialize Pinpoint odometry
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
-        pinpoint.resetPosAndIMU(); // Ensure Pinpoint is calibrated
+        pinpoint.resetPosAndIMU(); // Reset IMU and position for accurate starting coordinates
 
-        // Set motor directions
+        // Configure motor directions
         leftFront.setDirection(DcMotor.Direction.FORWARD);
-        leftRear.setDirection(DcMotor.Direction.FORWARD);
-        rightRear.setDirection(DcMotor.Direction.REVERSE);
+        leftBack.setDirection(DcMotor.Direction.FORWARD);
         rightFront.setDirection(DcMotor.Direction.REVERSE);
+        rightBack.setDirection(DcMotor.Direction.REVERSE);
 
-        // Set zero power behavior
+        // Configure braking behavior
         leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        leftRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightRear.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        // Optional: Adjust PID coefficients for precise control
-        PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(10, 0, 0);
-        PIDCoefficients HEADING_PID = new PIDCoefficients(8, 0, 0);
-
-        // Use Pinpoint for localization
+        // Use the Pinpoint as the localizer
         setLocalizer(new PinpointLocalizer(pinpoint));
     }
 
     @Override
     public List<Double> getWheelPositions() {
-        return null; // Use Pinpoint for localization; wheels aren't the primary odometry source
+        // Pinpoint handles localization, so no need to return wheel positions
+        return null;
     }
 
     @Override
     public List<Double> getWheelVelocities() {
-        return null; // Same as above
+        // Pinpoint handles localization, so no need to return wheel velocities
+        return null;
     }
 
     @Override
-    public void setMotorPowers(double v, double v1, double v2, double v3) {
-        leftFront.setPower(v);
-        leftRear.setPower(v1);
-        rightRear.setPower(v2);
-        rightFront.setPower(v3);
+    public void setMotorPowers(double frontLeft, double backLeft, double backRight, double frontRight) {
+        // Set motor powers for Mecanum drive
+        leftFront.setPower(frontLeft);
+        leftBack.setPower(backLeft);
+        rightBack.setPower(backRight);
+        rightFront.setPower(frontRight);
     }
 
     @Override
     public double getRawExternalHeading() {
-        return pinpoint.getHeading(); // Use Pinpoint heading
+        // Use Pinpoint's heading
+        return pinpoint.getHeading();
     }
 }
