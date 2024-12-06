@@ -7,8 +7,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
-@Autonomous(name = "Red Alliance Side A", group = "Autonomous")
-public class RedAllianceSideA extends LinearOpMode {
+@Autonomous(name = "Red Alliance Side B", group = "Autonomous")
+public class RedAllianceSideB extends LinearOpMode {
 
     // Declare hardware
     private DcMotor leftBackMotor;
