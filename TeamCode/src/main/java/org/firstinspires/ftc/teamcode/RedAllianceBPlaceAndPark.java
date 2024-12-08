@@ -24,8 +24,9 @@ public class RedAllianceBPlaceAndPark extends LinearOpMode {
     private DriveToPoint nav = new DriveToPoint(this);
 
     // Define positions
-    static final Pose2D START_TO_HIGH_CHAMBER = new Pose2D(DistanceUnit.MM, 1000, 0, AngleUnit.DEGREES, 0);
-    static final Pose2D HIGH_CHAMBER_TO_PARK = new Pose2D(DistanceUnit.MM, 0, 2000, AngleUnit.DEGREES, 0);
+    static final Pose2D DRIVE_TO_SUBVERSIVE = new Pose2D(DistanceUnit.MM, -1000, 0, AngleUnit.DEGREES, 0); // Driving backward
+    static final Pose2D DRIVE_TO_UPPER_CHAMBER = new Pose2D(DistanceUnit.MM, -500, 0, AngleUnit.DEGREES, 0); // Slow drive backward
+    static final Pose2D PARK_IN_OBSERVATION_ZONE = new Pose2D(DistanceUnit.MM, 0, 1000, AngleUnit.DEGREES, 0); // Strafe to park
 
     @Override
     public void runOpMode() {
@@ -35,7 +36,7 @@ public class RedAllianceBPlaceAndPark extends LinearOpMode {
         leftBackDrive = hardwareMap.get(DcMotor.class, "leftBackDrive");
         rightBackDrive = hardwareMap.get(DcMotor.class, "rightBackDrive");
         ySliderMotor = hardwareMap.get(DcMotor.class, "y_slider_motor");
-        clawServo = hardwareMap.get(Servo.class, "Claw");
+        clawServo = hardwareMap.get(Servo.class, "claw");
 
         // Motor configurations
         leftFrontDrive.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -65,7 +66,13 @@ public class RedAllianceBPlaceAndPark extends LinearOpMode {
             clawServo.setPosition(0.2); // Adjust for closed position
             sleep(500);
 
-            // Task 2: Move slider to high chamber position
+            // Task 2: Drive backward towards the subversive
+            if (nav.driveTo(pinpoint.getPosition(), DRIVE_TO_SUBVERSIVE, 0.7, 1)) {
+                telemetry.addLine("Reached subversive!");
+                telemetry.update();
+            }
+
+            // Task 3: Move slider to upper chamber position
             ySliderMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             ySliderMotor.setTargetPosition(1000); // Adjust for actual position
             ySliderMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -76,27 +83,30 @@ public class RedAllianceBPlaceAndPark extends LinearOpMode {
             }
             ySliderMotor.setPower(0);
 
-            // Task 3: Drive to the high chamber position
-            if (nav.driveTo(pinpoint.getPosition(), START_TO_HIGH_CHAMBER, 0.5, 1)) {
-                telemetry.addLine("Reached high chamber!");
+            // Task 4: Drive backward slowly to align with the chamber
+            if (nav.driveTo(pinpoint.getPosition(), DRIVE_TO_UPPER_CHAMBER, 0.3, 2)) {
+                telemetry.addLine("Aligned with upper chamber!");
+                telemetry.update();
             }
 
-            // Task 4: Open claw to release specimen
-            clawServo.setPosition(0.8); // Adjust for open position
-            sleep(500);
-
-            // Task 5: Return slider to starting position
-            ySliderMotor.setTargetPosition(0);
-            ySliderMotor.setPower(0.5);
+            // Task 5: Move slider back down slowly
+            ySliderMotor.setTargetPosition(500); // Adjust for actual position
+            ySliderMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            ySliderMotor.setPower(0.3);
             while (ySliderMotor.isBusy() && opModeIsActive()) {
-                telemetry.addData("Slider", "Returning to start...");
+                telemetry.addData("Slider", "Lowering slowly...");
                 telemetry.update();
             }
             ySliderMotor.setPower(0);
 
-            // Task 6: Drive to observation zone
-            if (nav.driveTo(pinpoint.getPosition(), HIGH_CHAMBER_TO_PARK, 0.5, 1)) {
+            // Task 6: Open claw to release specimen
+            clawServo.setPosition(0.8); // Adjust for open position
+            sleep(500);
+
+            // Task 7: Strafe to the observation zone
+            if (nav.driveTo(pinpoint.getPosition(), PARK_IN_OBSERVATION_ZONE, 0.5, 1)) {
                 telemetry.addLine("Parked in observation zone!");
+                telemetry.update();
             }
 
             // Final telemetry
