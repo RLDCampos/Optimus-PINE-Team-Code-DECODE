@@ -39,7 +39,7 @@ public class RedAllianceBPlaceAndPark extends LinearOpMode {
         leftBackDrive = hardwareMap.get(DcMotor.class, "leftBackDrive");
         rightBackDrive = hardwareMap.get(DcMotor.class, "rightBackDrive");
         ySliderMotor = hardwareMap.get(DcMotor.class, "y_slider_motor");
-        clawServo = hardwareMap.get(Servo.class, "claw");
+        clawServo = hardwareMap.get(Servo.class, "Claw");
 
         // Motor configurations
         leftFrontDrive.setDirection(DcMotorSimple.Direction.REVERSE);
