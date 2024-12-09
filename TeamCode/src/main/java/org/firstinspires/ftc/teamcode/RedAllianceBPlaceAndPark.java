@@ -15,8 +15,10 @@ import java.util.Locale;
 @Autonomous(name = "RedAllianceBPlaceAndPark", group = "Pinpoint")
 public class RedAllianceBPlaceAndPark extends LinearOpMode {
 
-    // Motors and servos
-    private DcMotor leftFrontDrive, rightFrontDrive, leftBackDrive, rightBackDrive, ySliderMotor;
+    private DcMotor rightFrontDrive;
+    private DcMotor leftBackDrive;
+    private DcMotor rightBackDrive;
+    private DcMotor ySliderMotor;
     private Servo clawServo;
 
     // Odometry and navigation
@@ -24,14 +26,16 @@ public class RedAllianceBPlaceAndPark extends LinearOpMode {
     private DriveToPoint nav = new DriveToPoint(this);
 
     // Define positions
-    static final Pose2D DRIVE_TO_SUBVERSIVE = new Pose2D(DistanceUnit.MM, -1000, 0, AngleUnit.DEGREES, 0); // Driving backward
-    static final Pose2D DRIVE_TO_UPPER_CHAMBER = new Pose2D(DistanceUnit.MM, -500, 0, AngleUnit.DEGREES, 0); // Slow drive backward
-    static final Pose2D PARK_IN_OBSERVATION_ZONE = new Pose2D(DistanceUnit.MM, 0, 1000, AngleUnit.DEGREES, 0); // Strafe to park
+    static final Pose2D STARTING_POSITION = new Pose2D(DistanceUnit.MM, 500, -500, AngleUnit.DEGREES, 0); // Facing the wall
+    static final Pose2D DRIVE_TO_SUBVERSIVE = new Pose2D(DistanceUnit.MM, 500, -1000, AngleUnit.DEGREES, 0); // Backward to subversive
+    static final Pose2D ALIGN_WITH_UPPER_CHAMBER = new Pose2D(DistanceUnit.MM, 500, -1500, AngleUnit.DEGREES, 0); // Align to place specimen
+    static final Pose2D DRIVE_TO_OBSERVATION_ZONE = new Pose2D(DistanceUnit.MM, 1000, -1500, AngleUnit.DEGREES, 0); // Strafe to park
 
     @Override
     public void runOpMode() {
         // Initialize motors and servos
-        leftFrontDrive = hardwareMap.get(DcMotor.class, "leftFrontDrive");
+        // Motors and servos
+        DcMotor leftFrontDrive = hardwareMap.get(DcMotor.class, "leftFrontDrive");
         rightFrontDrive = hardwareMap.get(DcMotor.class, "rightFrontDrive");
         leftBackDrive = hardwareMap.get(DcMotor.class, "leftBackDrive");
         rightBackDrive = hardwareMap.get(DcMotor.class, "rightBackDrive");
@@ -83,8 +87,8 @@ public class RedAllianceBPlaceAndPark extends LinearOpMode {
             }
             ySliderMotor.setPower(0);
 
-            // Task 4: Drive backward slowly to align with the chamber
-            if (nav.driveTo(pinpoint.getPosition(), DRIVE_TO_UPPER_CHAMBER, 0.3, 2)) {
+            // Task 4: Align with upper chamber (2D robot positioning)
+            if (nav.driveTo(pinpoint.getPosition(), ALIGN_WITH_UPPER_CHAMBER, 0.3, 2)) {
                 telemetry.addLine("Aligned with upper chamber!");
                 telemetry.update();
             }
@@ -104,7 +108,7 @@ public class RedAllianceBPlaceAndPark extends LinearOpMode {
             sleep(500);
 
             // Task 7: Strafe to the observation zone
-            if (nav.driveTo(pinpoint.getPosition(), PARK_IN_OBSERVATION_ZONE, 0.5, 1)) {
+            if (nav.driveTo(pinpoint.getPosition(), DRIVE_TO_OBSERVATION_ZONE, 0.5, 1)) {
                 telemetry.addLine("Parked in observation zone!");
                 telemetry.update();
             }
@@ -115,3 +119,6 @@ public class RedAllianceBPlaceAndPark extends LinearOpMode {
         }
     }
 }
+
+
+
