@@ -10,23 +10,23 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
-import java.util.Locale;
-
 @Autonomous(name = "RedAllianceBPlaceAndPark", group = "Pinpoint")
 public class RedAllianceBPlaceAndPark extends LinearOpMode {
 
-    private DcMotor rightFrontDrive;
-    private DcMotor leftBackDrive;
-    private DcMotor rightBackDrive;
-    private DcMotor ySliderMotor;
-    private Servo clawServo;
+    // Declare OpMode members for motors and servos
+    private DcMotor leftFrontDrive = null;
+    private DcMotor rightFrontDrive = null;
+    private DcMotor leftBackDrive = null;
+    private DcMotor rightBackDrive = null;
+    private DcMotor ySliderMotor = null;
+    private Servo clawServo = null;
 
-    // Odometry and navigation
-    private GoBildaPinpointDriver pinpoint;
+    // Declare OpMode members for odometry and navigation
+    private GoBildaPinpointDriver pinpoint = null;
     private DriveToPoint nav = new DriveToPoint(this);
 
     // Define positions
-    static final Pose2D STARTING_POSITION = new Pose2D(DistanceUnit.MM, 500, -1500, AngleUnit.DEGREES, 0); // Facing the wall
+    static final Pose2D STARTING_POSITION = new Pose2D(DistanceUnit.MM, 500, 0, AngleUnit.DEGREES, 0); // Facing the wall
     static final Pose2D DRIVE_TO_SUBVERSIVE = new Pose2D(DistanceUnit.MM, 500, -1000, AngleUnit.DEGREES, 0); // Backward to subversive
     static final Pose2D ALIGN_WITH_UPPER_CHAMBER = new Pose2D(DistanceUnit.MM, 500, -1500, AngleUnit.DEGREES, 0); // Align to place specimen
     static final Pose2D DRIVE_TO_OBSERVATION_ZONE = new Pose2D(DistanceUnit.MM, 1000, -1500, AngleUnit.DEGREES, 0); // Strafe to park
@@ -34,13 +34,12 @@ public class RedAllianceBPlaceAndPark extends LinearOpMode {
     @Override
     public void runOpMode() {
         // Initialize motors and servos
-        // Motors and servos
-        DcMotor leftFrontDrive = hardwareMap.get(DcMotor.class, "leftFrontDrive");
+        leftFrontDrive = hardwareMap.get(DcMotor.class, "leftFrontDrive");
         rightFrontDrive = hardwareMap.get(DcMotor.class, "rightFrontDrive");
         leftBackDrive = hardwareMap.get(DcMotor.class, "leftBackDrive");
         rightBackDrive = hardwareMap.get(DcMotor.class, "rightBackDrive");
         ySliderMotor = hardwareMap.get(DcMotor.class, "y_slider_motor");
-        clawServo = hardwareMap.get(Servo.class, "Claw");
+        clawServo = hardwareMap.get(Servo.class, "claw");
 
         // Motor configurations
         leftFrontDrive.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -119,6 +118,4 @@ public class RedAllianceBPlaceAndPark extends LinearOpMode {
         }
     }
 }
-
-
 
