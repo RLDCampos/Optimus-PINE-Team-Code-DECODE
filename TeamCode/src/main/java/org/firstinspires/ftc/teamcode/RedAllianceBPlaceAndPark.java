@@ -22,8 +22,8 @@ public class RedAllianceBPlaceAndPark extends LinearOpMode {
     private Servo clawServo = null;
 
     // Declare OpMode members for odometry and navigation
-    private GoBildaPinpointDriver pinpoint = null;
-    private DriveToPoint nav = new DriveToPoint(this);
+    private GoBildaPinpointDriver pinpoint; // Odometry Computer
+    private DriveToPoint nav = new DriveToPoint(this); // Point-to-point navigation class
 
     // Define positions
     static final Pose2D STARTING_POSITION = new Pose2D(DistanceUnit.MM, 500, 0, AngleUnit.DEGREES, 0); // Facing the wall
@@ -118,4 +118,5 @@ public class RedAllianceBPlaceAndPark extends LinearOpMode {
         }
     }
 }
+
 
