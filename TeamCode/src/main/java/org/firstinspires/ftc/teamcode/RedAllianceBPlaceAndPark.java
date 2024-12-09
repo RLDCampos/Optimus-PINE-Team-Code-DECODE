@@ -26,7 +26,7 @@ public class RedAllianceBPlaceAndPark extends LinearOpMode {
     private DriveToPoint nav = new DriveToPoint(this);
 
     // Define positions
-    static final Pose2D STARTING_POSITION = new Pose2D(DistanceUnit.MM, 500, -500, AngleUnit.DEGREES, 0); // Facing the wall
+    static final Pose2D STARTING_POSITION = new Pose2D(DistanceUnit.MM, 500, -1500, AngleUnit.DEGREES, 0); // Facing the wall
     static final Pose2D DRIVE_TO_SUBVERSIVE = new Pose2D(DistanceUnit.MM, 500, -1000, AngleUnit.DEGREES, 0); // Backward to subversive
     static final Pose2D ALIGN_WITH_UPPER_CHAMBER = new Pose2D(DistanceUnit.MM, 500, -1500, AngleUnit.DEGREES, 0); // Align to place specimen
     static final Pose2D DRIVE_TO_OBSERVATION_ZONE = new Pose2D(DistanceUnit.MM, 1000, -1500, AngleUnit.DEGREES, 0); // Strafe to park
@@ -40,7 +40,7 @@ public class RedAllianceBPlaceAndPark extends LinearOpMode {
         leftBackDrive = hardwareMap.get(DcMotor.class, "leftBackDrive");
         rightBackDrive = hardwareMap.get(DcMotor.class, "rightBackDrive");
         ySliderMotor = hardwareMap.get(DcMotor.class, "y_slider_motor");
-        clawServo = hardwareMap.get(Servo.class, "claw");
+        clawServo = hardwareMap.get(Servo.class, "Claw");
 
         // Motor configurations
         leftFrontDrive.setDirection(DcMotorSimple.Direction.REVERSE);
