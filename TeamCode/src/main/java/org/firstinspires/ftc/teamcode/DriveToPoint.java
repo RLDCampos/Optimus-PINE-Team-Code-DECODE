@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
 import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.RADIANS;
 import static org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit.INCH;
@@ -95,10 +96,10 @@ public class DriveToPoint {
     }
 
     public void initializeMotors() {
-        leftFrontDrive = setupDriveMotor("leftFrontDrive", DcMotorSimple.Direction.REVERSE);
-        rightFrontDrive = setupDriveMotor("rightFrontDrive", DcMotorSimple.Direction.FORWARD);
-        leftBackDrive = setupDriveMotor("leftBackDrive", DcMotorSimple.Direction.REVERSE);
-        rightBackDrive = setupDriveMotor("rightBackDrive", DcMotorSimple.Direction.FORWARD);
+        DcMotor leftFrontDrive = hardwareMap.get(DcMotor.class, "left_front");
+        DcMotor rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front");
+        DcMotor leftBackDrive = hardwareMap.get(DcMotor.class, "left_back");
+        DcMotor rightBackDrive = hardwareMap.get(DcMotor.class, "right_back");
     }
 
     public boolean driveTo(Pose2D currentPosition, Pose2D targetPosition, double power, double holdTime) {
