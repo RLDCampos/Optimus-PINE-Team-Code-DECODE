@@ -80,7 +80,8 @@ public class RedAllianceBPlaceAndPark extends LinearOpMode {
             ySliderMotor.setTargetPosition(1000); // Adjust for actual position
             ySliderMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             ySliderMotor.setPower(0.5);
-            while (ySliderMotor.isBusy() && opModeIsActive()) {
+            long startTime = System.currentTimeMillis();
+            while (ySliderMotor.isBusy() && opModeIsActive() && (System.currentTimeMillis() - startTime < 3000)) {
                 telemetry.addData("Slider", "Moving to high chamber...");
                 telemetry.update();
             }
