@@ -122,12 +122,6 @@ public class RedAllianceBPlaceAndPark extends LinearOpMode {
             }
 
 
-            // Task 7: Strafe to the observation zone
-            if (nav.driveTo(pinpoint.getPosition(), DRIVE_TO_OBSERVATION_ZONE, 0.5, 1)) {
-                telemetry.addLine("Parked in observation zone!");
-                telemetry.update();
-            }
-
             // Final telemetry
             telemetry.addData("Status", "Task Complete");
             telemetry.update();
