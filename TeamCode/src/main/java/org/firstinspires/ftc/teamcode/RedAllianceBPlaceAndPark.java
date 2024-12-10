@@ -116,7 +116,7 @@ public class RedAllianceBPlaceAndPark extends LinearOpMode {
             nav.driveTo(pinpoint.getPosition(), new Pose2D(DistanceUnit.MM, 500, -1400, AngleUnit.DEGREES, 0), 0.3, 1);
 
             // Step 3: Drive to the observation zone
-            if (nav.driveTo(pinpoint.getPosition(), DRIVE_TO_OBSERVATION_ZONE, 0.5, 1)) {
+            if (nav.driveTo(pinpoint.getPosition(), DRIVE_TO_OBSERVATION_ZONE, 0.3, 0.8)) {
                 telemetry.addLine("Parked in observation zone!");
                 telemetry.update();
             }
