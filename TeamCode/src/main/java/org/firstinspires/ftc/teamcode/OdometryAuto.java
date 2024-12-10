@@ -56,7 +56,7 @@ public class OdometryAuto extends LinearOpMode {
      * Configures the GoBILDA Pinpoint Odometry Computer.
      */
     private void initializeOdometry() {
-        odo = hardwareMap.get(GoBildaPinpointDriver.class, "odo");
+        odo = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
 
         odo.setOffsets(-84.0, -168.0); // Example offsets in mm
         odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_SWINGARM_POD);
@@ -91,8 +91,8 @@ public class OdometryAuto extends LinearOpMode {
 
         while (opModeIsActive() && (
                 Math.abs(targetX - xPos) > TOLERANCE ||
-                Math.abs(targetY - yPos) > TOLERANCE ||
-                Math.abs(targetHeading - heading) > TOLERANCE)) {
+                        Math.abs(targetY - yPos) > TOLERANCE ||
+                        Math.abs(targetHeading - heading) > TOLERANCE)) {
 
             odo.update();
             currentPosition = odo.getPosition();

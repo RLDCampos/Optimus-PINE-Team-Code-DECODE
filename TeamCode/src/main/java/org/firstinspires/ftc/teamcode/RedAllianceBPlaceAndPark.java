@@ -13,6 +13,14 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 @Autonomous(name = "RedAllianceBPlaceAndPark", group = "Pinpoint")
 public class RedAllianceBPlaceAndPark extends LinearOpMode {
 
+    private DcMotor rightFrontDrive;
+    private DcMotor leftBackDrive;
+    private DcMotor rightBackDrive;
+    private DcMotor ySliderMotor;
+    private Servo clawServo;
+
+    // Declare OpMode members for odometry and navigation
+    private GoBildaPinpointDriver pinpoint; // Odometry Computer
     private DriveToPoint nav = new DriveToPoint(this); // Point-to-point navigation class
 
     // Define positions
@@ -25,12 +33,12 @@ public class RedAllianceBPlaceAndPark extends LinearOpMode {
     public void runOpMode() {
         // Initialize motors and servos
         // Declare OpMode members for motors and servos
-        DcMotor leftFrontDrive = hardwareMap.get(DcMotor.class, "left_front");
-        DcMotor rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front");
-        DcMotor leftBackDrive = hardwareMap.get(DcMotor.class, "left_back");
-        DcMotor rightBackDrive = hardwareMap.get(DcMotor.class, "right_back");
-        DcMotor ySliderMotor = hardwareMap.get(DcMotor.class, "y_slider_motor");
-        Servo clawServo = hardwareMap.get(Servo.class, "Claw");
+        DcMotor leftFrontDrive = hardwareMap.get(DcMotor.class, "leftFrontDrive");
+        rightFrontDrive = hardwareMap.get(DcMotor.class, "rightFrontDrive");
+        leftBackDrive = hardwareMap.get(DcMotor.class, "leftBackDrive");
+        rightBackDrive = hardwareMap.get(DcMotor.class, "rightBackDrive");
+        ySliderMotor = hardwareMap.get(DcMotor.class, "y_slider_motor");
+        clawServo = hardwareMap.get(Servo.class, "Claw");
 
         // Motor configurations
         leftFrontDrive.setDirection(DcMotorSimple.Direction.FORWARD);
@@ -43,9 +51,7 @@ public class RedAllianceBPlaceAndPark extends LinearOpMode {
         rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // Odometry configuration
-        // Declare OpMode members for odometry and navigation
-        // Odometry Computer
-        GoBildaPinpointDriver pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
+        pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
         pinpoint.setOffsets(-142.0, 120.0); // Adjust based on hardware
         pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
         pinpoint.resetPosAndIMU();
@@ -121,5 +127,7 @@ public class RedAllianceBPlaceAndPark extends LinearOpMode {
         }
     }
 }
+
+
 
 
