@@ -34,10 +34,10 @@ public class RedAllianceBPlaceAndPark extends LinearOpMode {
     @Override
     public void runOpMode() {
         // Initialize motors and servos
-        leftFrontDrive = hardwareMap.get(DcMotor.class, "leftFrontDrive");
-        rightFrontDrive = hardwareMap.get(DcMotor.class, "rightFrontDrive");
-        leftBackDrive = hardwareMap.get(DcMotor.class, "leftBackDrive");
-        rightBackDrive = hardwareMap.get(DcMotor.class, "rightBackDrive");
+        leftFrontDrive = hardwareMap.get(DcMotor.class, "left_front");
+        rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front");
+        leftBackDrive = hardwareMap.get(DcMotor.class, "left_back");
+        rightBackDrive = hardwareMap.get(DcMotor.class, "right_back");
         ySliderMotor = hardwareMap.get(DcMotor.class, "y_slider_motor");
         clawServo = hardwareMap.get(Servo.class, "Claw");
 
