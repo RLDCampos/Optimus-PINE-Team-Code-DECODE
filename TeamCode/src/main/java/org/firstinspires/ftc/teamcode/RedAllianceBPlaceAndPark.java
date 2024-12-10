@@ -42,8 +42,10 @@ public class RedAllianceBPlaceAndPark extends LinearOpMode {
         clawServo = hardwareMap.get(Servo.class, "Claw");
 
         // Motor configurations
-        leftFrontDrive.setDirection(DcMotorSimple.Direction.REVERSE);
-        leftBackDrive.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftFrontDrive.setDirection(DcMotorSimple.Direction.FORWARD);
+        rightFrontDrive.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftBackDrive.setDirection(DcMotorSimple.Direction.FORWARD);
+        rightBackDrive.setDirection(DcMotorSimple.Direction.REVERSE);
         leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -77,7 +79,7 @@ public class RedAllianceBPlaceAndPark extends LinearOpMode {
 
             // Task 3: Move slider to upper chamber position
             ySliderMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            ySliderMotor.setTargetPosition(1000); // Adjust for actual position
+            ySliderMotor.setTargetPosition(500); // Adjust for actual position
             ySliderMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             ySliderMotor.setPower(0.5);
             long startTime = System.currentTimeMillis();
