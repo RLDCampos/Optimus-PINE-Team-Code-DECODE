@@ -27,13 +27,14 @@ android {
 repositories {
     maven {
         url = 'https://maven.brott.dev/'
-        url = 'https://gobilda.jfrog.io/artifactory/gobilda'
+        
     }
 }
 
 dependencies {
     implementation project(':FtcRobotController')
     implementation 'org.openftc:easyopencv:1.7.3'
+
 
     // Road Runner dependencies
     implementation 'com.acmerobotics.roadrunner:core:1.0.0'
