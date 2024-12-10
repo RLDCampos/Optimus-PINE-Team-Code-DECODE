@@ -43,8 +43,12 @@ public class DriveToPoint {
     private static double dGain = 0.002;
     private static double accel = 2.0;
 
-    /*todo: make the forward/perpendicular pid values smarter. Instead of just using perpendicular for strafe. Use it for the smaller error axis, maybe a cutoff?
+    /*todo: make the forward/perpendicular pid values smarter. Instead of  private ElapsedTime holdTimer = new ElapsedTime();
+    private ElapsedTime currentTime = new ElapsedTime();just using perpendicular for strafe. Use it for the smaller error axis, maybe a cutoff?
        consider if this is even better than a well tuned single PID loop*/
+    private ElapsedTime holdTimer = new ElapsedTime();
+    private ElapsedTime currentTime = new ElapsedTime();
+
 
     private static double yawPGain = 5.0;
     private static double yawDGain = 0.0;
@@ -55,8 +59,7 @@ public class DriveToPoint {
     private DcMotor leftBackDrive;
     private DcMotor rightBackDrive;
 
-    private ElapsedTime holdTimer = new ElapsedTime();
-    private ElapsedTime currentTime = new ElapsedTime();
+
 
     private PIDLoops xPID = new PIDLoops();
     private PIDLoops yPID = new PIDLoops();
