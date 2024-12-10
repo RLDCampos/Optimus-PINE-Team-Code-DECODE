@@ -26,7 +26,7 @@ public class RedAllianceBPlaceAndPark extends LinearOpMode {
     private DriveToPoint nav = new DriveToPoint(this); // Point-to-point navigation class
 
     // Define positions
-    static final Pose2D STARTING_POSITION = new Pose2D(DistanceUnit.MM, 500, 0, AngleUnit.DEGREES, 0); // Facing the wall
+    static final Pose2D STARTING_POSITION = new Pose2D(DistanceUnit.MM, 500, 0, AngleUnit.DEGREES, 180); // Facing the wall
     static final Pose2D DRIVE_TO_SUBVERSIVE = new Pose2D(DistanceUnit.MM, 500, -1000, AngleUnit.DEGREES, 0); // Backward to subversive
     static final Pose2D ALIGN_WITH_UPPER_CHAMBER = new Pose2D(DistanceUnit.MM, 500, -1500, AngleUnit.DEGREES, 0); // Align to place specimen
     static final Pose2D DRIVE_TO_OBSERVATION_ZONE = new Pose2D(DistanceUnit.MM, 1000, -1500, AngleUnit.DEGREES, 0); // Strafe to park
