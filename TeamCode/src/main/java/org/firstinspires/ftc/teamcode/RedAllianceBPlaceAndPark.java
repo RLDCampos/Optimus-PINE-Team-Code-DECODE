@@ -70,7 +70,7 @@ public class RedAllianceBPlaceAndPark extends LinearOpMode {
             pinpoint.update();
 
             // Task 1: Close claw to hold specimen
-            clawServo.setPosition(0.2); // Adjust for closed position
+            clawServo.setPosition(0.3); // Adjust for closed position
             sleep(500);
 
             // Task 2: Drive backward towards the subversive
