@@ -12,6 +12,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
 @Autonomous(name = "RedAllianceBPlaceAndPark", group = "Pinpoint")
 public class RedAllianceBPlaceAndPark extends LinearOpMode {
+    // Declare all motors at the class level
     private DcMotor leftFrontDrive;
     private DcMotor rightFrontDrive;
     private DcMotor leftBackDrive;
@@ -36,14 +37,6 @@ public class RedAllianceBPlaceAndPark extends LinearOpMode {
         rightFrontDrive = hardwareMap.get(DcMotor.class, "rightFrontDrive");
         leftBackDrive = hardwareMap.get(DcMotor.class, "leftBackDrive");
         rightBackDrive = hardwareMap.get(DcMotor.class, "rightBackDrive");
-        ySliderMotor = hardwareMap.get(DcMotor.class, "y_slider_motor");
-
-
-        // Declare OpMode members for motors and servos
-
-        leftBackDrive = hardwareMap.get(DcMotor.class, "left_back");
-        rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front");
-        rightBackDrive = hardwareMap.get(DcMotor.class, "right_back");
         ySliderMotor = hardwareMap.get(DcMotor.class, "y_slider_motor");
         clawServo = hardwareMap.get(Servo.class, "Claw");
 
