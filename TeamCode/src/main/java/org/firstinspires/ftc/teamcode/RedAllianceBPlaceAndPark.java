@@ -12,53 +12,20 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
 @Autonomous(name = "RedAllianceBPlaceAndPark", group = "Pinpoint")
 public class RedAllianceBPlaceAndPark extends LinearOpMode {
-    // Declare all motors at the class level
-    private DcMotor leftFrontDrive;
-    private DcMotor rightFrontDrive;
-    private DcMotor leftBackDrive;
-    private DcMotor rightBackDrive;
-    private DcMotor ySliderMotor;
+    private DcMotor leftFrontDrive, rightFrontDrive, leftBackDrive, rightBackDrive, ySliderMotor;
     private Servo clawServo;
 
-    // Declare OpMode members for odometry and navigation
-    private GoBildaPinpointDriver pinpoint; // Odometry Computer
-    private DriveToPoint nav = new DriveToPoint(this); // Point-to-point navigation class
+    private GoBildaPinpointDriver pinpoint;
+    private DriveToPoint nav;
 
-    // Define positions
-    static final Pose2D STARTING_POSITION = new Pose2D(DistanceUnit.MM, 500, 0, AngleUnit.DEGREES, 180); // Facing the wall
-    static final Pose2D DRIVE_TO_SUBVERSIVE = new Pose2D(DistanceUnit.MM, 500, -1000, AngleUnit.DEGREES, 180); // Backward to subversive
-    static final Pose2D ALIGN_WITH_UPPER_CHAMBER = new Pose2D(DistanceUnit.MM, 500, -1500, AngleUnit.DEGREES, 180); // Align to place specimen
-    static final Pose2D DRIVE_TO_OBSERVATION_ZONE = new Pose2D(DistanceUnit.MM, 1000, -1500, AngleUnit.DEGREES, 180); // Strafe to park
+    static final Pose2D STARTING_POSITION = new Pose2D(DistanceUnit.MM, 500, 0, AngleUnit.DEGREES, 180);
+    static final Pose2D DRIVE_TO_SUBVERSIVE = new Pose2D(DistanceUnit.MM, 500, -1000, AngleUnit.DEGREES, 180);
+    static final Pose2D ALIGN_WITH_UPPER_CHAMBER = new Pose2D(DistanceUnit.MM, 500, -1500, AngleUnit.DEGREES, 180);
+    static final Pose2D DRIVE_TO_OBSERVATION_ZONE = new Pose2D(DistanceUnit.MM, 1000, -1500, AngleUnit.DEGREES, 180);
 
     @Override
     public void runOpMode() {
-        // Initialize motors and servos
-        leftFrontDrive = hardwareMap.get(DcMotor.class, "left_front");
-        rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front");
-        leftBackDrive = hardwareMap.get(DcMotor.class, "left_back");
-        rightBackDrive = hardwareMap.get(DcMotor.class, "right_back");
-        ySliderMotor = hardwareMap.get(DcMotor.class, "y_slider_motor");
-        clawServo = hardwareMap.get(Servo.class, "Claw");
-
-        // Motor configurations
-        leftFrontDrive.setDirection(DcMotorSimple.Direction.FORWARD);
-        rightFrontDrive.setDirection(DcMotorSimple.Direction.REVERSE);
-        leftBackDrive.setDirection(DcMotorSimple.Direction.FORWARD);
-        rightBackDrive.setDirection(DcMotorSimple.Direction.REVERSE);
-        ySliderMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-
-        // Set zero power behavior for drive motors
-        leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        leftBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        // Odometry configuration
-        pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
-        pinpoint.setOffsets(-142.0, 120.0); // Adjust based on hardware
-        pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
-        pinpoint.resetPosAndIMU();
-        nav.setDriveType(DriveToPoint.DriveType.MECANUM);
+        initializeHardware();
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -66,70 +33,93 @@ public class RedAllianceBPlaceAndPark extends LinearOpMode {
         waitForStart();
 
         if (opModeIsActive()) {
-            // Update odometry
-            pinpoint.update();
-
-            // Task 1: Close claw to hold specimen
-            clawServo.setPosition(0.3); // Adjust for closed position
-            sleep(500);
-
-            // Task 2: Drive backward towards the subversive
-            if (nav.driveTo(pinpoint.getPosition(), DRIVE_TO_SUBVERSIVE, 0.7, 1)) {
-                telemetry.addLine("Reached subversive!");
-                telemetry.update();
-            }
-
-            // Task 3: Move slider to upper chamber position
-            ySliderMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            ySliderMotor.setTargetPosition(500); // Adjust for actual position
-            ySliderMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            ySliderMotor.setPower(0.5);
-            long startTime = System.currentTimeMillis();
-            while (ySliderMotor.isBusy() && opModeIsActive() && (System.currentTimeMillis() - startTime < 3000)) {
-                telemetry.addData("Slider", "Moving to high chamber...");
-                telemetry.update();
-            }
-            ySliderMotor.setPower(0);
-
-            // Task 4: Align with upper chamber (2D robot positioning)
-            if (nav.driveTo(pinpoint.getPosition(), ALIGN_WITH_UPPER_CHAMBER, 0.3, 2)) {
-                telemetry.addLine("Aligned with upper chamber!");
-                telemetry.update();
-            }
-
-            // Task 5: Move slider back down slowly
-            ySliderMotor.setTargetPosition(500); // Adjust for actual position
-            ySliderMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            ySliderMotor.setPower(0.3);
-            while (ySliderMotor.isBusy() && opModeIsActive()) {
-                telemetry.addData("Slider", "Lowering slowly...");
-                telemetry.update();
-            }
-            ySliderMotor.setPower(0);
-
-            // Task 6: Open claw to release specimen
-            clawServo.setPosition(0.8); // Adjust for open position
-            sleep(500);
-
-            // Step 1: Move forward slightly to clear the subversive
-            nav.driveTo(pinpoint.getPosition(), new Pose2D(DistanceUnit.MM, 500, -1400, AngleUnit.DEGREES, 180), 0.5, 1);
-
-            // Step 2: Rotate to face 0° heading
-            nav.driveTo(pinpoint.getPosition(), new Pose2D(DistanceUnit.MM, 500, -1400, AngleUnit.DEGREES, 0), 0.3, 1);
-
-            // Step 3: Drive to the observation zone
-            if (nav.driveTo(pinpoint.getPosition(), DRIVE_TO_OBSERVATION_ZONE, 0.3, 0.8)) {
-                telemetry.addLine("Parked in observation zone!");
-                telemetry.update();
-            }
-
-
-            // Final telemetry
-            telemetry.addData("Status", "Task Complete");
-            telemetry.update();
+            executeTasks();
         }
     }
+
+    private void initializeHardware() {
+        leftFrontDrive = hardwareMap.get(DcMotor.class, "left_front");
+        rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front");
+        leftBackDrive = hardwareMap.get(DcMotor.class, "left_back");
+        rightBackDrive = hardwareMap.get(DcMotor.class, "right_back");
+        ySliderMotor = hardwareMap.get(DcMotor.class, "y_slider_motor");
+        clawServo = hardwareMap.get(Servo.class, "Claw");
+
+        leftFrontDrive.setDirection(DcMotorSimple.Direction.FORWARD);
+        rightFrontDrive.setDirection(DcMotorSimple.Direction.REVERSE);
+        leftBackDrive.setDirection(DcMotorSimple.Direction.FORWARD);
+        rightBackDrive.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        leftBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        ySliderMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+
+        pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
+        pinpoint.setOffsets(-142.0, 120.0);
+        pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
+        pinpoint.resetPosAndIMU();
+
+        nav = new DriveToPoint(this);
+        nav.setDriveType(DriveToPoint.DriveType.MECANUM);
+    }
+
+    private void executeTasks() {
+        // Task 1: Close claw
+        clawServo.setPosition(0.3);
+        sleep(500);
+
+        // Task 2: Drive to subversive
+        if (driveToPoint(DRIVE_TO_SUBVERSIVE, "Reached subversive!")) {
+            // Task 3: Move slider
+            moveSlider(500, 0.5, 3000);
+
+            // Task 4: Align with upper chamber
+            if (driveToPoint(ALIGN_WITH_UPPER_CHAMBER, "Aligned with upper chamber!")) {
+                // Task 5: Lower slider
+                moveSlider(0, 0.3, 3000);
+
+                // Task 6: Open claw
+                clawServo.setPosition(0.8);
+                sleep(500);
+
+                // Task 7: Drive to observation zone
+                driveToPoint(DRIVE_TO_OBSERVATION_ZONE, "Parked in observation zone!");
+            }
+        }
+
+        telemetry.addData("Status", "All tasks completed");
+        telemetry.update();
+    }
+
+    private boolean driveToPoint(Pose2D targetPose, String successMessage) {
+        if (nav.driveTo(pinpoint.getPosition(), targetPose, 0.5, 1.0)) {
+            telemetry.addLine(successMessage);
+            telemetry.update();
+            return true;
+        }
+        telemetry.addLine("Failed to reach " + successMessage);
+        telemetry.update();
+        return false;
+    }
+
+    private void moveSlider(int targetPosition, double power, long timeoutMs) {
+        ySliderMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        ySliderMotor.setTargetPosition(targetPosition);
+        ySliderMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        ySliderMotor.setPower(power);
+
+        long startTime = System.currentTimeMillis();
+        while (ySliderMotor.isBusy() && opModeIsActive() && (System.currentTimeMillis() - startTime < timeoutMs)) {
+            telemetry.addData("Slider", "Moving to position: %d", targetPosition);
+            telemetry.update();
+        }
+        ySliderMotor.setPower(0);
+    }
 }
+
 
 
 
