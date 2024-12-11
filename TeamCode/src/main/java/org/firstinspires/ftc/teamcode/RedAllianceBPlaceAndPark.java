@@ -10,9 +10,13 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
-@Autonomous(name = "RedAllianceBPlaceAndPark", group = "Pinpoint")
+@Autonomous(name = "RedAllianceBPlaceAndPark", group = "Autonomus")
 public class RedAllianceBPlaceAndPark extends LinearOpMode {
-    private DcMotor leftFrontDrive, rightFrontDrive, leftBackDrive, rightBackDrive, ySliderMotor;
+    private DcMotor leftFrontDrive;
+    private DcMotor rightFrontDrive;
+    private DcMotor leftBackDrive;
+    private DcMotor rightBackDrive;
+    private DcMotor ySliderMotor;
     private Servo clawServo;
 
     private GoBildaPinpointDriver pinpoint;
