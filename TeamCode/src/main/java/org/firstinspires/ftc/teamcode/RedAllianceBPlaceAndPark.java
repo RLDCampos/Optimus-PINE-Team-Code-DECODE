@@ -5,18 +5,13 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
-@Autonomous(name = "RedAllianceBPlaceAndPark", group = "Autonomus")
+@Autonomous(name = "RedAllianceBPlaceAndPark", group = "Autonomous")
 public class RedAllianceBPlaceAndPark extends LinearOpMode {
-    private DcMotor leftFrontDrive;
-    private DcMotor rightFrontDrive;
-    private DcMotor leftBackDrive;
-    private DcMotor rightBackDrive;
-    private DcMotor ySliderMotor;
+    private DcMotor leftFrontDrive, rightFrontDrive, leftBackDrive, rightBackDrive, ySliderMotor;
     private Servo clawServo;
 
     private GoBildaPinpointDriver pinpoint;
@@ -42,6 +37,7 @@ public class RedAllianceBPlaceAndPark extends LinearOpMode {
     }
 
     private void initializeHardware() {
+        // Initialize motors and servos
         leftFrontDrive = hardwareMap.get(DcMotor.class, "left_front");
         rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front");
         leftBackDrive = hardwareMap.get(DcMotor.class, "left_back");
@@ -49,23 +45,33 @@ public class RedAllianceBPlaceAndPark extends LinearOpMode {
         ySliderMotor = hardwareMap.get(DcMotor.class, "y_slider_motor");
         clawServo = hardwareMap.get(Servo.class, "Claw");
 
+        // Motor configuration
         leftFrontDrive.setDirection(DcMotorSimple.Direction.FORWARD);
         rightFrontDrive.setDirection(DcMotorSimple.Direction.REVERSE);
         leftBackDrive.setDirection(DcMotorSimple.Direction.FORWARD);
         rightBackDrive.setDirection(DcMotorSimple.Direction.REVERSE);
-
         leftFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightFrontDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightBackDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
         ySliderMotor.setDirection(DcMotorSimple.Direction.FORWARD);
 
+        // Odometry initialization
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, "pinpoint");
-        pinpoint.setOffsets(-142.0, 120.0);
+        pinpoint.setOffsets(-90.0, -300.0); // Adjusted offsets
         pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
+        pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.FORWARD, GoBildaPinpointDriver.EncoderDirection.FORWARD);
         pinpoint.resetPosAndIMU();
 
+        // Debugging telemetry for odometry
+        telemetry.addData("Status", "Pinpoint Initialized");
+        telemetry.addData("X offset", pinpoint.getXOffset());
+        telemetry.addData("Y offset", pinpoint.getYOffset());
+        telemetry.addData("Device Version Number", pinpoint.getDeviceVersion());
+        telemetry.addData("Device Scalar", pinpoint.getYawScalar());
+        telemetry.update();
+
+        // Navigation initialization
         nav = new DriveToPoint(this);
         nav.setDriveType(DriveToPoint.DriveType.MECANUM);
     }
@@ -123,6 +129,7 @@ public class RedAllianceBPlaceAndPark extends LinearOpMode {
         ySliderMotor.setPower(0);
     }
 }
+
 
 
 
