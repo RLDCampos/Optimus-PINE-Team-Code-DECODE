@@ -70,10 +70,19 @@ public class RedAllianceBPlaceAndPark extends LinearOpMode {
 
         // Navigation initialization
         nav = new org.firstinspires.ftc.teamcode.DriveToPoint(this);
-        //If p is to high expect oscillations or the robot will overshoot the target.
+        //If p (Proportional Coefficient Controls how strongly the robot
+        // reacts to positional errors in the X and Y directions.
+        // is to high expect oscillations or the robot will overshoot the target.
         //If p is too low, the robot will take too long to reach the target or stop short.
-        // Start p = 0.001
-        nav.setXYCoefficients(0.01, 0.002, 0.001, DistanceUnit.MM, 15);
+        // Start p = 0.01 and increase it if the robot is too slow.
+        //If d (Derivative Coefficient) is too high, it can cause the robot to hesitate or move jerkily.
+        //If d is too low, the robot may overshoot the target or oscillate.
+        // Start d = 0.001 and increase it if the robot is too slow.
+        nav.setXYCoefficients(0.01, 0.001, 0.001, DistanceUnit.MM, 15);
+        //Acceleration specifies the feedforward term for acceleration control in navigation.
+        //Start with 0.001 and increase it if the robot feels sluggish
+        // when starting or transitioning between movement
+        //Tolerance defines the acceptable margin of error in position for considering the robot "at the target."
         nav.setYawCoefficients(0.5, 0.0, 0.1, AngleUnit.DEGREES, 3);
         nav.setDriveType(org.firstinspires.ftc.teamcode.DriveToPoint.DriveType.MECANUM);
 
@@ -152,7 +161,9 @@ public class RedAllianceBPlaceAndPark extends LinearOpMode {
         // Scale speed based on distance remaining
         double maxSpeed = 0.7;
         double minSpeed = 0.2;
-        double speed = Math.max(minSpeed, Math.min(maxSpeed, distanceRemaining / 200.0)); // Scale between 0.2 and 0.7
+        double speed = Math.max(minSpeed, Math.min(maxSpeed, distanceRemaining / 200.0)); // Scale between 0.2 and 0.7.
+        // About the integer under distanceRemaining, 300.0 or 400.0 works well for
+        // longer dutances (> 1000mm).
 
         return nav.driveTo(currentPose, targetPose, speed, targetPose.getHeading(AngleUnit.DEGREES));
     }
