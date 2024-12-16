@@ -18,7 +18,7 @@ public class RedAllianceBPlaceAndPark extends LinearOpMode {
 
     // Odometry and navigation
     GoBildaPinpointDriver odo;
-    org.firstinspires.ftc.teamcode.DriveToPoint nav;
+    DriveToPoint nav = new DriveToPoint(this); //OpMode member for the point-to-point navigation class
 
     // Target poses
     static final Pose2D TARGET_1 = new Pose2D(DistanceUnit.MM, -560, 0, AngleUnit.DEGREES, 0);
@@ -62,15 +62,18 @@ public class RedAllianceBPlaceAndPark extends LinearOpMode {
         odo.setOffsets(-90.0, -300.0);
         odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
         odo.setEncoderDirections(
-                GoBildaPinpointDriver.EncoderDirection.FORWARD,
-                GoBildaPinpointDriver.EncoderDirection.REVERSED
-        );
-        odo.recalibrateIMU();
+                GoBildaPinpointDriver.EncoderDirection.FORWARD,// x odometry pod direction
+                GoBildaPinpointDriver.EncoderDirection.REVERSED);// y odometry pod directio
+
+
         odo.resetPosAndIMU();
 
         // Navigation initialization
         nav = new org.firstinspires.ftc.teamcode.DriveToPoint(this);
-        nav.setXYCoefficients(0.02, 0.002, 0.001, DistanceUnit.MM, 15);
+        //If p is to high expect oscillations or the robot will overshoot the target.
+        //If p is too low, the robot will take too long to reach the target or stop short.
+        // Start p = 0.001
+        nav.setXYCoefficients(0.01, 0.002, 0.001, DistanceUnit.MM, 15);
         nav.setYawCoefficients(0.5, 0.0, 0.1, AngleUnit.DEGREES, 3);
         nav.setDriveType(org.firstinspires.ftc.teamcode.DriveToPoint.DriveType.MECANUM);
 
