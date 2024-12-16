@@ -64,7 +64,7 @@ public class RedAllianceBPlaceAndPark extends LinearOpMode {
         //is positive, backwards is negative. In this example, to track the center of your robot, the X offset should be
         //-84mm, and the Y offset should be -168mm.
         odo = hardwareMap.get(GoBildaPinpointDriver.class, "odo");
-        odo.setOffsets(-90.0, 300.0);
+        odo.setOffsets(-90.0, -300.0);
         odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
         odo.setEncoderDirections(
                 GoBildaPinpointDriver.EncoderDirection.FORWARD,// x odometry pod direction
@@ -170,7 +170,21 @@ public class RedAllianceBPlaceAndPark extends LinearOpMode {
         // About the integer under distanceRemaining, 300.0 or 400.0 works well for
         // longer dutances (> 1000mm).
 
-        return nav.driveTo(currentPose, targetPose, speed, targetPose.getHeading(AngleUnit.DEGREES));
+        boolean atTarget = nav.driveTo(currentPose, targetPose, speed, targetPose.getHeading(AngleUnit.DEGREES));
+
+        // Apply calculated motor powers
+        leftFrontDrive.setPower(nav.getMotorPower(DriveToPoint.DriveMotor.LEFT_FRONT));
+        rightFrontDrive.setPower(nav.getMotorPower(DriveToPoint.DriveMotor.RIGHT_FRONT));
+        leftBackDrive.setPower(nav.getMotorPower(DriveToPoint.DriveMotor.LEFT_BACK));
+        rightBackDrive.setPower(nav.getMotorPower(DriveToPoint.DriveMotor.RIGHT_BACK));
+
+        // Update telemetry
+        telemetry.addData("State", "Driving to Target");
+        telemetry.addData("Distance Remaining", "%.2f mm", distanceRemaining);
+        telemetry.update();
+
+        return atTarget;
+
     }
 
     private void moveSlider(int mm) {
