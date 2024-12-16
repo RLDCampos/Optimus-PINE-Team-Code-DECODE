@@ -58,6 +58,11 @@ public class RedAllianceBPlaceAndPark extends LinearOpMode {
         leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
 
         // Odometry initialization
+        //The X Pod Offset measures how far (in mm) sideways the X pod is from the tracking point. Left of the point
+        //is a positive number, right of the point is a negative number.
+        //The Y Pod Offset measures how far forwards the Y pod is from the tracking point. Forwards of the point
+        //is positive, backwards is negative. In this example, to track the center of your robot, the X offset should be
+        //-84mm, and the Y offset should be -168mm.
         odo = hardwareMap.get(GoBildaPinpointDriver.class, "odo");
         odo.setOffsets(-90.0, 300.0);
         odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
