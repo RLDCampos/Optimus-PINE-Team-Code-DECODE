@@ -64,11 +64,11 @@ public class RedAllianceBPlaceAndPark extends LinearOpMode {
         //is positive, backwards is negative. In this example, to track the center of your robot, the X offset should be
         //-84mm, and the Y offset should be -168mm.
         odo = hardwareMap.get(GoBildaPinpointDriver.class, "odo");
-        odo.setOffsets(-90.0, -300.0);
+        odo.setOffsets(75.54, -60.43);
         odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
         odo.setEncoderDirections(
                 GoBildaPinpointDriver.EncoderDirection.FORWARD,// x odometry pod direction
-                GoBildaPinpointDriver.EncoderDirection.REVERSED);// y odometry pod directio
+                GoBildaPinpointDriver.EncoderDirection.FORWARD);// y odometry pod directio
 
 
         odo.resetPosAndIMU();
