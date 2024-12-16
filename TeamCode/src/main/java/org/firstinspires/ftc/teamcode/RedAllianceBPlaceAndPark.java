@@ -59,7 +59,7 @@ public class RedAllianceBPlaceAndPark extends LinearOpMode {
 
         // Odometry initialization
         odo = hardwareMap.get(GoBildaPinpointDriver.class, "odo");
-        odo.setOffsets(-90.0, -300.0);
+        odo.setOffsets(-90.0, 300.0);
         odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
         odo.setEncoderDirections(
                 GoBildaPinpointDriver.EncoderDirection.FORWARD,// x odometry pod direction
