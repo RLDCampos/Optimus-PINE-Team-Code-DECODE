@@ -103,7 +103,7 @@ public class RedAllianceBPlaceAndPark extends LinearOpMode {
                     break;
 
                 case DRIVE_TO_TARGET_1:
-                    if (nav.driveTo(odo.getPosition(), TARGET_1, 0.7, 0)) {
+                    if (nav.driveTo(odo.getPosition(), TARGET_1, 0.7, 2)) {
                         telemetry.addLine("Reached Position #1!");
                         stateMachine = StateMachine.SLIDER_UP;
                     }
@@ -115,7 +115,7 @@ public class RedAllianceBPlaceAndPark extends LinearOpMode {
                     break;
 
                 case DRIVE_TO_TARGET_2:
-                    if (nav.driveTo(odo.getPosition(), TARGET_2, 0.7, 0)) {
+                    if (nav.driveTo(odo.getPosition(), TARGET_2, 0.7, 2)) {
                         telemetry.addLine("Reached Position #2!");
                         stateMachine = StateMachine.SLIDER_DOWN_AND_OPEN_CLAW;
                     }
@@ -127,7 +127,7 @@ public class RedAllianceBPlaceAndPark extends LinearOpMode {
                     break;
 
                 case DRIVE_TO_TARGET_3:
-                    if (nav.driveTo(odo.getPosition(), TARGET_3, 0.7, 0)) {
+                    if (nav.driveTo(odo.getPosition(), TARGET_3, 0.7, 2)) {
                         telemetry.addLine("Reached Position #3!");
                         stateMachine = StateMachine.AT_TARGET;
                     }
