@@ -9,7 +9,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
-@Autonomous(name = "Red AllianceB Place and Park Smooth", group = "Autonomous")
+@Autonomous(name = "Red AllianceB Place and Park", group = "Autonomous")
 public class RedAllianceBPlaceAndPark extends LinearOpMode {
 
     // Motors and servo
@@ -17,13 +17,13 @@ public class RedAllianceBPlaceAndPark extends LinearOpMode {
     Servo clawServo;
 
     // Odometry and navigation
-    GoBildaPinpointDriver odo;
+    GoBildaPinpointDriver odo; // Declare OpMode member for the Odometry Computer
     DriveToPoint nav = new DriveToPoint(this); //OpMode member for the point-to-point navigation class
 
-    // Target poses
+    // Target positions for navigation
     static final Pose2D TARGET_1 = new Pose2D(DistanceUnit.MM, -560, 0, AngleUnit.DEGREES, 0);
     static final Pose2D TARGET_2 = new Pose2D(DistanceUnit.MM, -670, 0, AngleUnit.DEGREES, 0);
-    static final Pose2D TARGET_3 = new Pose2D(DistanceUnit.MM, -100, 650, AngleUnit.DEGREES, 90);
+    static final Pose2D TARGET_3 = new Pose2D(DistanceUnit.MM, -100, -650, AngleUnit.DEGREES, 90);
 
     // State machine for managing autonomous sequence
     enum StateMachine {
@@ -38,7 +38,7 @@ public class RedAllianceBPlaceAndPark extends LinearOpMode {
     }
 
     @Override
-    public void runOpMode() throws InterruptedException {
+    public void runOpMode() {
         // Hardware initialization
         leftFrontDrive = hardwareMap.get(DcMotor.class, "left_front");
         rightFrontDrive = hardwareMap.get(DcMotor.class, "right_front");
@@ -58,28 +58,17 @@ public class RedAllianceBPlaceAndPark extends LinearOpMode {
         leftBackDrive.setDirection(DcMotor.Direction.REVERSE);
 
         // Odometry initialization
-        //The X Pod Offset measures how far (in mm) sideways the X pod is from the tracking point. Left of the point
-        //is a positive number, right of the point is a negative number.
-        //The Y Pod Offset measures how far forwards the Y pod is from the tracking point. Forwards of the point
-        //is positive, backwards is negative. In this example, to track the center of your robot, the X offset should be
-        //-84mm, and the Y offset should be -168mm.
         odo = hardwareMap.get(GoBildaPinpointDriver.class, "odo");
-        odo.setOffsets(75.54, -60.43);
+        odo.setOffsets(-75.54, -60.43);
         odo.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
         odo.setEncoderDirections(
-                GoBildaPinpointDriver.EncoderDirection.FORWARD,// x odometry pod direction
-                GoBildaPinpointDriver.EncoderDirection.FORWARD);// y odometry pod directio
-
-
+                GoBildaPinpointDriver.EncoderDirection.FORWARD,  // x odometry pod direction
+                GoBildaPinpointDriver.EncoderDirection.REVERSED  // y odometry pod direction
+        );
         odo.resetPosAndIMU();
 
         // Navigation initialization
-        nav = new org.firstinspires.ftc.teamcode.DriveToPoint(this);
-
-        //nav.setXYCoefficients(0.01, 0.001, 0.001, DistanceUnit.MM, 15);
-
-        //nav.setYawCoefficients(0.5, 0.0, 0.1, AngleUnit.DEGREES, 3);
-        nav.setDriveType(org.firstinspires.ftc.teamcode.DriveToPoint.DriveType.MECANUM);
+        nav.setDriveType(DriveToPoint.DriveType.MECANUM);
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -94,7 +83,6 @@ public class RedAllianceBPlaceAndPark extends LinearOpMode {
 
             switch (stateMachine) {
                 case WAITING_FOR_START:
-                    odo.resetPosAndIMU(); // Reset odometry and IMU
                     stateMachine = StateMachine.CLOSE_CLAW;
                     break;
 
@@ -105,7 +93,7 @@ public class RedAllianceBPlaceAndPark extends LinearOpMode {
                     break;
 
                 case DRIVE_TO_TARGET_1:
-                    if (smoothDriveTo(TARGET_1)) {
+                    if (nav.driveTo(odo.getPosition(), TARGET_1, 0.7, 0)) {
                         telemetry.addLine("Reached Position #1!");
                         stateMachine = StateMachine.SLIDER_UP;
                     }
@@ -117,7 +105,7 @@ public class RedAllianceBPlaceAndPark extends LinearOpMode {
                     break;
 
                 case DRIVE_TO_TARGET_2:
-                    if (smoothDriveTo(TARGET_2)) {
+                    if (nav.driveTo(odo.getPosition(), TARGET_2, 0.7, 0)) {
                         telemetry.addLine("Reached Position #2!");
                         stateMachine = StateMachine.SLIDER_DOWN_AND_OPEN_CLAW;
                     }
@@ -129,7 +117,7 @@ public class RedAllianceBPlaceAndPark extends LinearOpMode {
                     break;
 
                 case DRIVE_TO_TARGET_3:
-                    if (smoothDriveTo(TARGET_3)) {
+                    if (nav.driveTo(odo.getPosition(), TARGET_3, 0.7, 0)) {
                         telemetry.addLine("Reached Position #3!");
                         stateMachine = StateMachine.AT_TARGET;
                     }
@@ -141,44 +129,23 @@ public class RedAllianceBPlaceAndPark extends LinearOpMode {
                     break;
             }
 
+            // Apply calculated motor power
+            leftFrontDrive.setPower(nav.getMotorPower(DriveToPoint.DriveMotor.LEFT_FRONT));
+            rightFrontDrive.setPower(nav.getMotorPower(DriveToPoint.DriveMotor.RIGHT_FRONT));
+            leftBackDrive.setPower(nav.getMotorPower(DriveToPoint.DriveMotor.LEFT_BACK));
+            rightBackDrive.setPower(nav.getMotorPower(DriveToPoint.DriveMotor.RIGHT_BACK));
+
+            // Update telemetry
             telemetry.addData("State", stateMachine);
-            telemetry.addData("Position", odo.getPosition().toString());
+            Pose2D pos = odo.getPosition();
+            telemetry.addData("Position", "{X: %.3f, Y: %.3f, H: %.3f}",
+                    pos.getX(DistanceUnit.MM), pos.getY(DistanceUnit.MM), pos.getHeading(AngleUnit.DEGREES));
             telemetry.update();
         }
     }
 
-    private boolean smoothDriveTo(Pose2D targetPose) {
-        Pose2D currentPose = odo.getPosition();
-        double xError = targetPose.getX(DistanceUnit.MM) - currentPose.getX(DistanceUnit.MM);
-        double yError = targetPose.getY(DistanceUnit.MM) - currentPose.getY(DistanceUnit.MM);
-        double distanceRemaining = Math.hypot(xError, yError);
-
-        // Scale speed based on distance remaining
-        double maxSpeed = 0.7;
-        double minSpeed = 0.2;
-        double speed = Math.max(minSpeed, Math.min(maxSpeed, distanceRemaining / 200.0)); // Scale between 0.2 and 0.7.
-        // About the integer under distanceRemaining, 300.0 or 400.0 works well for
-        // longer dutances (> 1000mm).
-
-        boolean atTarget = nav.driveTo(currentPose, targetPose, speed, targetPose.getHeading(AngleUnit.DEGREES));
-
-        // Apply calculated motor powers
-        leftFrontDrive.setPower(nav.getMotorPower(DriveToPoint.DriveMotor.LEFT_FRONT));
-        rightFrontDrive.setPower(nav.getMotorPower(DriveToPoint.DriveMotor.RIGHT_FRONT));
-        leftBackDrive.setPower(nav.getMotorPower(DriveToPoint.DriveMotor.LEFT_BACK));
-        rightBackDrive.setPower(nav.getMotorPower(DriveToPoint.DriveMotor.RIGHT_BACK));
-
-        // Update telemetry
-        telemetry.addData("State", "Driving to Target");
-        telemetry.addData("Distance Remaining", "%.2f mm", distanceRemaining);
-        telemetry.update();
-
-        return atTarget;
-
-    }
-
     private void moveSlider(int mm) {
-        int ticks = mm * 10; // Conversion
+        int ticks = mm * 10;
         ySliderMotor.setTargetPosition(ySliderMotor.getCurrentPosition() + ticks);
         ySliderMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         ySliderMotor.setPower(0.5);
@@ -191,7 +158,7 @@ public class RedAllianceBPlaceAndPark extends LinearOpMode {
     }
 
     private void moveSliderAndOpenClaw(int mm) {
-        int ticks = Math.abs(mm) * 10; // Convert mm to ticks
+        int ticks = Math.abs(mm) * 10;
         int targetPosition = ySliderMotor.getCurrentPosition() - ticks;
         ySliderMotor.setTargetPosition(targetPosition);
         ySliderMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -201,7 +168,7 @@ public class RedAllianceBPlaceAndPark extends LinearOpMode {
 
         while (ySliderMotor.isBusy() && opModeIsActive()) {
             if (!clawOpened) {
-                clawServo.setPosition(0.2); // Keep claw slightly closed initially
+                clawServo.setPosition(0.2); // Gradual claw opening
                 clawOpened = true;
             }
         }
