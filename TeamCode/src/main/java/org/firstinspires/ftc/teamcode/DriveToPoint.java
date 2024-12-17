@@ -40,6 +40,18 @@ public class DriveToPoint {
         IN_BOUNDS
     }
 
+    //If p (Proportional Coefficient Controls how strongly the robot
+    // reacts to positional errors in the X and Y directions.
+    // is to high expect oscillations or the robot will overshoot the target.
+    //If p is too low, the robot will take too long to reach the target or stop short.
+    // Start p = 0.01 and increase it if the robot is too slow.
+    //If d (Derivative Coefficient) is too high, it can cause the robot to hesitate or move jerkily.
+    //If d is too low, the robot may overshoot the target or oscillate.
+    // Start d = 0.001 and increase it if the robot is too slow.
+    //Acceleration specifies the feedforward term for acceleration control in navigation.
+    //Start with 0.001 and increase it if the robot feels sluggish
+    // when starting or transitioning between movement
+    //Tolerance defines the acceptable margin of error in position for considering the robot "at the target."
     private static double xyTolerance = 12;// The starting value is 12
     private static double yawTolerance = 0.0349066; // The starting value is 0.0349066
 
