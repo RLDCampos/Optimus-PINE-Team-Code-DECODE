@@ -25,7 +25,7 @@ public class RedAllianceBPlaceAndPark extends LinearOpMode {
     // Target positions for navigation
     static final Pose2D TARGET_1 = new Pose2D(DistanceUnit.MM, -560, 0, AngleUnit.DEGREES, 0);
     static final Pose2D TARGET_2 = new Pose2D(DistanceUnit.MM, -670, 0, AngleUnit.DEGREES, 0);
-    static final Pose2D TARGET_3 = new Pose2D(DistanceUnit.MM, -100, -650, AngleUnit.DEGREES, 90);
+    static final Pose2D TARGET_3 = new Pose2D(DistanceUnit.MM, -200, 650, AngleUnit.DEGREES, 90);
 
     // State machine for managing autonomous sequence
     enum StateMachine {
