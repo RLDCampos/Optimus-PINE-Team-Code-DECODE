@@ -9,6 +9,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
+import java.util.Locale;
+
 @Autonomous(name = "Red AllianceB Place and Park", group = "Autonomous")
 public class RedAllianceBPlaceAndPark extends LinearOpMode {
 
@@ -65,18 +67,26 @@ public class RedAllianceBPlaceAndPark extends LinearOpMode {
                 GoBildaPinpointDriver.EncoderDirection.FORWARD,  // x odometry pod direction
                 GoBildaPinpointDriver.EncoderDirection.REVERSED  // y odometry pod direction
         );
+
         odo.resetPosAndIMU();
 
         // Navigation initialization
         nav.setDriveType(DriveToPoint.DriveType.MECANUM);
 
+
+        StateMachine stateMachine;
+        stateMachine = StateMachine.WAITING_FOR_START;
+
         telemetry.addData("Status", "Initialized");
+        telemetry.addData("X offset", odo.getXOffset());
+        telemetry.addData("Y offset", odo.getYOffset());
+        telemetry.addData("Device Version Number:", odo.getDeviceVersion());
+        telemetry.addData("Device Scalar", odo.getYawScalar());
         telemetry.update();
 
+        // Wait for the game to start (driver presses START)
         waitForStart();
-
-        // State machine logic
-        StateMachine stateMachine = StateMachine.WAITING_FOR_START;
+        resetRuntime();
 
         while (opModeIsActive()) {
             odo.update(); // Update odometry data
@@ -137,9 +147,11 @@ public class RedAllianceBPlaceAndPark extends LinearOpMode {
 
             // Update telemetry
             telemetry.addData("State", stateMachine);
+
             Pose2D pos = odo.getPosition();
-            telemetry.addData("Position", "{X: %.3f, Y: %.3f, H: %.3f}",
-                    pos.getX(DistanceUnit.MM), pos.getY(DistanceUnit.MM), pos.getHeading(AngleUnit.DEGREES));
+            String data = String.format(Locale.US, "{X: %.3f, Y: %.3f, H: %.3f}", pos.getX(DistanceUnit.MM), pos.getY(DistanceUnit.MM), pos.getHeading(AngleUnit.DEGREES));
+            telemetry.addData("Position", data);
+
             telemetry.update();
         }
     }
