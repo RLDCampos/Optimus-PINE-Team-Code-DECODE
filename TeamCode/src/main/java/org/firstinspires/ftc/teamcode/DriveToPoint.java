@@ -52,16 +52,16 @@ public class DriveToPoint {
     //Start with 0.001 and increase it if the robot feels sluggish
     // when starting or transitioning between movement
     //Tolerance defines the acceptable margin of error in position for considering the robot "at the target."
-    private static double xyTolerance = 12;// The starting value is 12
+    private static double xyTolerance = 10;// The starting value is 12
     private static double yawTolerance = 0.0349066; // The starting value is 0.0349066
 
     private static double pGain = 0.0080;// The starting value is 0.008
     private static double dGain = 0.00015; // The starting value is 0.00001
     private static double accel = 10.0; // The starting value is 10.0
 
-    private static double yawPGain = 3.0; //The starting value is 5.0
-    private static double yawDGain = 0.1;// The starting value is 0.0
-    private static double yawAccel = 20.0;
+    private static double yawPGain = 5.0; //The starting value is 5.0
+    private static double yawDGain = 0.2;// The starting value is 0.0
+    private static double yawAccel = 15.0;
 
     private double leftFrontMotorOutput  = 0;
     private double rightFrontMotorOutput = 0;

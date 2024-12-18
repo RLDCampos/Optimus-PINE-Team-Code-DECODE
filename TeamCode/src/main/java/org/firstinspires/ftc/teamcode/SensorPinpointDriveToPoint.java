@@ -37,10 +37,10 @@ public class SensorPinpointDriveToPoint extends LinearOpMode {
         DRIVE_TO_TARGET_5
     }
 
-    static final Pose2D TARGET_1 = new Pose2D(DistanceUnit.MM,2000,0,AngleUnit.DEGREES,0);
-    static final Pose2D TARGET_2 = new Pose2D(DistanceUnit.MM, 2000, -2000, AngleUnit.DEGREES, -90);
-    static final Pose2D TARGET_3 = new Pose2D(DistanceUnit.MM,200,-2000, AngleUnit.DEGREES,-180);
-    static final Pose2D TARGET_4 = new Pose2D(DistanceUnit.MM, 200,0, AngleUnit.DEGREES, -270);
+    static final Pose2D TARGET_1 = new Pose2D(DistanceUnit.MM,2500,0,AngleUnit.DEGREES,0);
+    static final Pose2D TARGET_2 = new Pose2D(DistanceUnit.MM, 2500, -2500, AngleUnit.DEGREES, -90);
+    static final Pose2D TARGET_3 = new Pose2D(DistanceUnit.MM,200,-2500, AngleUnit.DEGREES,-90);
+    static final Pose2D TARGET_4 = new Pose2D(DistanceUnit.MM, 200,0, AngleUnit.DEGREES, -90);
     static final Pose2D TARGET_5 = new Pose2D(DistanceUnit.MM, 200, 0, AngleUnit.DEGREES, 0);
 
 
