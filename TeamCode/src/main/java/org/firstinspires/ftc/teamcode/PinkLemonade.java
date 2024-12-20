@@ -106,9 +106,9 @@ public class PinkLemonade extends LinearOpMode {
             double ClawServoPower = -(gamepad1.left_trigger*0.5) + 0.5;
 
             double IntakeServoPower;
-            if (gamepad2.a) IntakeServoPower = 0.3;
-            else IntakeServoPower = 0.6;
-            if (gamepad2.b) IntakeServoPower = 0.85;
+            if (gamepad2.a) IntakeServoPower = 0.25;
+            else IntakeServoPower = 0.55;
+            if (gamepad2.b) IntakeServoPower = 0.8;
 
             double IRotatePower = (gamepad2.right_trigger*0.5) + -(gamepad2.left_trigger*0.5) + 0.5;
 
@@ -127,8 +127,9 @@ public class PinkLemonade extends LinearOpMode {
             //Hanging mode
             if (gamepad2.y) {
                 xsliderMotorPower = 0.1;
-                IntakeServoPower = 0.8;
-                RoofServoPower = 0.8;
+                IntakeServoPower = 0.55;
+                RoofServoPower = 0.6;
+                BucketServoPower = 0.7;
             }
 
 
