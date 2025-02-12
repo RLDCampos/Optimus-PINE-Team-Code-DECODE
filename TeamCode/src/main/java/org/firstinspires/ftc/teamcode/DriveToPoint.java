@@ -55,13 +55,13 @@ public class DriveToPoint {
     private static double xyTolerance = 17;// The starting value is 12
     private static double yawTolerance = 0.0523599; // The starting value is 0.0349066
 
-    private static double pGain = 0.006;// The starting value is 0.008
-    private static double dGain = 0.0001; // The starting value is 0.00001
-    private static double accel = 7.0; // The starting value is 10.0
+    private static double pGain = 0.008;// The starting value is 0.008
+    private static double dGain = 0.00001; // The starting value is 0.00001
+    private static double accel = 10.0; // The starting value is 10.0
 
-    private static double yawPGain = 3.0; //The starting value is 5.0
-    private static double yawDGain = 0.001;// The starting value is 0.0
-    private static double yawAccel = 15.0;
+    private static double yawPGain = 5.0; //The starting value is 5.0
+    private static double yawDGain = 0.018;// The starting value is 0.0
+    private static double yawAccel = 3.0;// It was initially set to 15.0
 
     private double leftFrontMotorOutput  = 0;
     private double rightFrontMotorOutput = 0;
