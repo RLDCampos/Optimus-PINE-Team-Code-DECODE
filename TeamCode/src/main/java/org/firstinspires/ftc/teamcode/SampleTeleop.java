@@ -71,7 +71,7 @@ public class SampleTeleop extends LinearOpMode
                 drive = -SAFE_STRAFE_SPEED / 2.0;
             }
 
-            // This is where we heep the robot heading locked so it doesn't turn while driving or strafing in a straight line.
+            // This is where we keep the robot heading locked so it doesn't turn while driving or strafing in a straight line.
             // Is the driver turning the robot, or should it hold its heading?
             if (Math.abs(yaw) > 0.05) {
                 // driver is commanding robot to turn, so turn off auto heading.
