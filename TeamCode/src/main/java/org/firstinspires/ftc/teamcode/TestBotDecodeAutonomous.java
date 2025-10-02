@@ -24,7 +24,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 @Autonomous(name = "TestBotDecodeAutonomous", group = "StarterBot")
 public class TestBotDecodeAutonomous extends LinearOpMode {
 
-    // ---------- Shooter/Feeder tuning (same spirit as StarterBotAuto/Teleop) ----------
+    // Shooter/Feeder tuning (same spirit as StarterBotAuto/Teleop)
     private static final double FEED_TIME_SECONDS = 0.30;
     private static final double TIME_BETWEEN_SHOTS = 2.0;
 
@@ -32,7 +32,7 @@ public class TestBotDecodeAutonomous extends LinearOpMode {
     private static final double LAUNCHER_MIN_VELOCITY    = 1075;  // ticks/s
     private static final PIDFCoefficients LAUNCHER_PIDF  = new PIDFCoefficients(300, 0, 0, 10);
 
-    // ---------- Drive tuning for this autonomous (uses SimplifiedOdometryRobot limits internally) ----------
+    // Drive tuning for this autonomous (uses SimplifiedOdometryRobot limits internally)
     private static final double DRIVE_HOLD_SEC = 1.0;
     private static final double TURN_HOLD_SEC  = 1.0;
 
@@ -95,7 +95,7 @@ public class TestBotDecodeAutonomous extends LinearOpMode {
         telemetry.addLine("Initialized. X=BLUE  B=RED  (during INIT)");
         telemetry.update();
 
-        // -------- INIT loop: allow alliance selection like StarterBotAuto --------
+        // INIT loop: allow alliance selection like StarterBotAuto
         while (!isStarted() && !isStopRequested()) {
             if (gamepad1.b) alliance = Alliance.RED;
             if (gamepad1.x) alliance = Alliance.BLUE;
@@ -108,13 +108,13 @@ public class TestBotDecodeAutonomous extends LinearOpMode {
             sleep(20);
         }
 
-        // -------- START pressed --------
+        // START pressed
         if (isStopRequested()) return;
         autoState   = AutoState.LAUNCH_SEQUENCE;
         launchState = LaunchState.IDLE;
         shotTimer.reset();
 
-        // -------- Main autonomous state machine --------
+        // Main autonomous state machine
         while (opModeIsActive()) {
             switch (autoState) {
                 case LAUNCH_SEQUENCE:
