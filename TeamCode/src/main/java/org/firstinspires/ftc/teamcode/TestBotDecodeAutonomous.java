@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**
  * TestBotDecodeAutonomous
- * Uses:
+ * This code assumes the following hardware:
  *  - Mecanum drive + IMU + odometry via SimplifiedOdometryRobot
  *  - Launcher + dual feeders with the same state machine style as StarterBotAuto
  * Hardware names MUST match StarterBotTeleopMecanums:
