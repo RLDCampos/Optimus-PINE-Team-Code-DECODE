@@ -25,7 +25,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 public class TestBotDecodeAutonomous extends LinearOpMode {
 
     // ---------- Shooter/Feeder tuning (same spirit as StarterBotAuto/Teleop) ----------
-    private static final double FEED_TIME_SECONDS = 0.20;
+    private static final double FEED_TIME_SECONDS = 0.30;
     private static final double TIME_BETWEEN_SHOTS = 2.0;
 
     private static final double LAUNCHER_TARGET_VELOCITY = 1125;  // ticks/s
