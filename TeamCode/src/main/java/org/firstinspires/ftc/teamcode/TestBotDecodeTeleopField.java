@@ -58,9 +58,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * we will also need to adjust the "PIDF" coefficients with some that are a better fit for our application.
  */
 
-@TeleOp(name = "StarterBotTeleopMecanums", group = "StarterBot")
+@TeleOp(name = "Test Bot DECODE TeleOp Field Drive", group = "StarterBot")
 //@Disabled
-public class TestBotDecodeTeleop extends OpMode {
+public class TestBotDecodeTeleopField extends OpMode {
     final double FEED_TIME_SECONDS = 0.30; //The feeder servos run this long when a shot is requested.
     final double STOP_SPEED = 0.0; //We send this power to the servos when we want them to stop.
     final double FULL_SPEED = 1.0;
