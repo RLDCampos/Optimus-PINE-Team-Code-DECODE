@@ -1,5 +1,5 @@
 //This code was designed for the DECODE season and assumes mecanum field-centric drive, tow feeders and one motor launcher
-
+// imu orientation can be changed in SimplifiedOdometryRobot.java in this project (TeamCode).
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
