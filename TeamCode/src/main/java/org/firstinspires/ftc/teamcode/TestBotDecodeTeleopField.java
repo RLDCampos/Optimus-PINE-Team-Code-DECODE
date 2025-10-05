@@ -21,8 +21,8 @@ public class TestBotDecodeTeleopField extends LinearOpMode {
     private static final double LAUNCHER_TARGET_VELOCITY = 1125;
     private static final double LAUNCHER_MIN_VELOCITY = 1075;
 
-    // --- Drive + mechanisms ---
-    private SimplifiedOdometryRobot robot;  // owns IMU + drive motors
+    // Drive, feeders and launcher motor
+    private SimplifiedOdometryRobot robot;  // owns IMU + drive motors from SimplifiedOdometryRobot
     private DcMotorEx launcher;
     private CRServo leftFeeder, rightFeeder;
 
@@ -42,12 +42,12 @@ public class TestBotDecodeTeleopField extends LinearOpMode {
         leftFeeder  = hardwareMap.get(CRServo.class, "left_feeder");
         rightFeeder = hardwareMap.get(CRServo.class, "right_feeder");
 
-        // Launcher setup (RUN_USING_ENCODER + velocity PIDF)
+        // Launcher setup (RUN_USING_ENCODER + velocity PIDF). P for proportional, I for integral, and D for derivative.
         launcher.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         launcher.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         launcher.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(300, 0, 0, 10));
 
-        // Feeder baseline
+        // Feeder baseline. Feeders are reversed so that they can move artifacts in the same direction (like we do to motor wheels)
         leftFeeder.setDirection(DcMotorSimple.Direction.REVERSE);
         leftFeeder.setPower(STOP_SPEED);
         rightFeeder.setPower(STOP_SPEED);
@@ -65,12 +65,12 @@ public class TestBotDecodeTeleopField extends LinearOpMode {
         robot.resetHeading();
 
         while (opModeIsActive()) {
-            // --- Read sensors (updates robot.heading in DEGREES) ---
+            // Read sensors (updates robot.heading in DEGREES)
             robot.readSensors();
             // Convert to radians for joystick rotation
             double headingRad = Math.toRadians(robot.getHeading()); // +CCW
 
-            // --- Driver inputs ---
+            // Driver inputs from gamepad1
             double y  = -gamepad1.left_stick_y;  // forward/back
             double x  =  gamepad1.left_stick_x;  // strafe
             double rx =  gamepad1.right_stick_x; // rotate in place
@@ -81,7 +81,7 @@ public class TestBotDecodeTeleopField extends LinearOpMode {
             x  *= speedScale;
             rx *= speedScale;
 
-            // --- Field-centric (polar): rotate joystick vector by -heading ---
+            // Field-centric (polar): rotate joystick vector by -heading as seeing in Java For FTC section 20.2.3
             double r = Math.hypot(x, y);
             double stickAngle = Math.atan2(y, x);
             double fieldAngle = stickAngle - headingRad;
@@ -89,7 +89,7 @@ public class TestBotDecodeTeleopField extends LinearOpMode {
             double rotatedY = r * Math.sin(fieldAngle); // drive axis
 
             // If strafing is flipped on your bot, swap the sign:
-            // rotatedX = -rotatedX;
+            //rotatedX = -rotatedX
 
             // --- Drive the robot using its low-level mixer ---
             robot.moveRobot(rotatedY, rotatedX, rx);
