@@ -14,7 +14,7 @@ import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 @TeleOp(name = "TestBotDecodeTeleopField", group = "StarterBot")
 public class TestBotDecodeTeleopField extends LinearOpMode {
 
-    // --- Shooter/feeder constants (same as your current TeleOp) ---
+    // Shooter/feeder constants (same as your current TeleOp). Change these constants to suit your robot and alliances game startegies
     private static final double FEED_TIME_SECONDS = 0.30;
     private static final double STOP_SPEED = 0.0;
     private static final double FULL_SPEED = 1.0;
